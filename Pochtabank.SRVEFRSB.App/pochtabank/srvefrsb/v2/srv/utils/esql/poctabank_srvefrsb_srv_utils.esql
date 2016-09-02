@@ -1,0 +1,24 @@
+BROKER SCHEMA pochtabank.srvefrsb.v2.srv.utils.esql
+PATH pochtabank.common.utils;
+DECLARE tem NAMESPACE 'http://tempuri.org/';
+
+CREATE FUNCTION CreateGetDebtorRegisterReq(IN outRoot REFERENCE, IN startDate CHARACTER)
+	BEGIN
+		CALL CreateXMLNSCDomain(outRoot);
+		--SET outRoot.XMLNSC.tem:GetDebtorRegister.tem:date = CAST(CAST(startDate AS DATE format 'yyyy-MM-dd') AS CHARACTER FORMAT 'yyyy-MM-dd''T''HH:mm:ss');
+	    SET outRoot.XMLNSC.tem:GetDebtorRegister.tem:date = CAST(startDate AS CHARACTER FORMAT 'yyyy-MM-dd''T''HH:mm:ss');
+	END;
+
+	
+CREATE FUNCTION CreateGetDebtorMessagesContentReq(IN outRoot REFERENCE, IN bankruptId CHARACTER, IN startDate CHARACTER)
+	BEGIN
+		CALL CreateXMLNSCDomain(outRoot);
+		SET outRoot.XMLNSC.tem:GetDebtorMessagesContentForPeriodByIdBankrupt.tem:idBankrupt = bankruptId;
+		SET outRoot.XMLNSC.tem:GetDebtorMessagesContentForPeriodByIdBankrupt.tem:startDate = startDate;
+END;
+
+	
+
+
+
+

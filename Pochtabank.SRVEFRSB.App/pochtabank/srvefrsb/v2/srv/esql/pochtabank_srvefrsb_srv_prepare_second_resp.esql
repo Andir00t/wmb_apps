@@ -1,0 +1,26 @@
+BROKER SCHEMA pochtabank.srvefrsb.v2.srv.esql
+PATH pochtabank.srvefrsb.v2.srv.utils.esql;
+
+DECLARE BankruptCount SHARED INTEGER 0;
+
+CREATE COMPUTE MODULE pochtabank_srvefrsb_srv_prepare_second_resp
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE responseCDATA CHARACTER InputRoot.XMLNSC.*:Envelope.*:Body.*:GetDebtorMessagesContentForPeriodByIdBankruptResponse.*:GetDebtorMessagesContentForPeriodByIdBankruptResult;
+		CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC')	PARSE(CAST(responseCDATA AS BLOB CCSID 1208 ENCODING MQENC_NATIVE), MQENC_NATIVE, 1208);
+	
+		IF OutputRoot.XMLNSC.*:Messages.*:MessageData.*:MessageInfo.*:MessageType = 'ArbitralDecree' THEN
+		DECLARE DecisionDate CHARACTER OutputRoot.XMLNSC.*:Messages.*:MessageData.*:MessageInfo.*:CourtDecision.*:CourtDecree.*:DecisionDate;
+		DECLARE DecisionTypeId CHARACTER OutputRoot.XMLNSC.*:Messages.*:MessageData.*:MessageInfo.*:CourtDecision.*:DecisionType.*:Id;
+		SET OutputRoot.XMLNSC = Environment.usr.currentMsg;
+		SET OutputRoot.XMLNSC.GetDebtorRegisterResponse.GetDebtorRegisterResult.DebtorList.*.CourtDecision.DecisionDate = DecisionDate;
+		SET OutputRoot.XMLNSC.GetDebtorRegisterResponse.GetDebtorRegisterResult.DebtorList.*.CourtDecision.DecisionTypeId = DecisionTypeId;
+		SET BankruptCount = BankruptCount + 1;
+		PROPAGATE TO TERMINAL 'out';	
+		END IF;
+		
+		RETURN FALSE;
+	END;
+	
+END MODULE;

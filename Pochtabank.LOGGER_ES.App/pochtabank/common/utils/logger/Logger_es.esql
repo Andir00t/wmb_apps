@@ -1,0 +1,124 @@
+BROKER SCHEMA pochtabank.common.utils.logger
+
+CREATE COMPUTE MODULE logger_es
+		
+	DECLARE elasticUrl EXTERNAL CHARACTER 'http://localhost:9200';
+	DECLARE elasticIdx EXTERNAL CHARACTER 'esblog'; 
+	DECLARE elasticTimeoutMSec EXTERNAL INTEGER 2000;
+	DECLARE elasticIdxDivide EXTERNAL CHARACTER 'd';
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE logLevel INT 0;
+		DECLARE elasticUri CHARACTER '/' || elasticIdx || '_' || getElasticTimeFrame() || '/logevent';
+		DECLARE transactionId CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.transactionId);
+		DECLARE jmsId CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.jmsId);
+		DECLARE uuId CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.uuId);
+		DECLARE fileName CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.fileName);
+		DECLARE defaultId CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.defaultId);
+		DECLARE sender CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.sender);
+		DECLARE moduleName CHAR FIELDVALUE(InputRoot.MQRFH2.usr.logInfo.moduleName);
+		DECLARE msgBLOB BLOB NULL;
+		DECLARE msgBody CHAR;
+		DECLARE dt CHARACTER;
+		DECLARE tm CHARACTER;
+		DECLARE dttm CHARACTER;
+		DECLARE rawBody CHARACTER;
+	
+		SET jmsId= SUBSTRING(jmsId AFTER 'ID:');
+		CALL fillHttpRestDestination(OutputLocalEnvironment, elasticUrl, 'POST', elasticUri, elasticTimeoutMSec);
+		CALL createJSONDomain(OutputRoot);
+		CREATE FIELD OutputRoot.JSON.Data;
+		DECLARE logevent REFERENCE TO OutputRoot.JSON.Data;
+		DECLARE logRef REFERENCE TO InputRoot.MQRFH2.usr.logs;
+				
+		MOVE logRef FIRSTCHILD;
+		WHILE LASTMOVE(logRef) DO
+			
+			SET msgBLOB = logRef.msgBody;
+			SET msgBody = CAST(msgBLOB AS CHARACTER CCSID 1208 ENCODING MQENC_NATIVE);
+			SET dt = SUBSTRING(logRef.dateTime BEFORE ' ');
+			SET tm = SUBSTRING(logRef.dateTime AFTER ' ');
+			SET dttm = dt || 'T' || tm;
+					
+			IF CAST(logRef.code AS INT) = 0 THEN
+				DECLARE logType INTEGER COALESCE(CAST(logRef.logType AS INTEGER), 1);				
+				IF(logType >= logLevel) THEN			
+				
+				SET logevent.TransactionId = transactionId;
+				SET logevent.Sender = sender;
+				SET logevent.ModuleName = moduleName;
+				SET logevent.Code = CAST(logRef.code AS INT);
+				SET logevent.Description = logRef.description;
+				 IF(logType = 10) THEN
+					SET logevent.LogType = 'ERROR';
+					ELSE
+					SET logevent.LogType = 'SUCCESS';
+				 END IF;
+				SET logevent.Datetime = dttm;
+				SET logevent.ExcList = logRef.excList;
+				SET logevent.MsgBody = msgBody;
+				SET logevent.JmsId = jmsId;
+				SET logevent.UUId = uuId;
+				SET logevent.RawBody = rawBody;	
+				SET logevent.FileName = fileName;
+				SET logevent.DefaultId = defaultId;
+				PROPAGATE TO TERMINAL 'out' DELETE NONE; 
+				END IF;
+			ELSE
+				DECLARE logType INTEGER COALESCE(CAST(logRef.logType AS INTEGER), 2);				
+				IF(logType >= logLevel) THEN	
+
+				SET logevent.TransactionId = transactionId;
+				SET logevent.Sender = sender;
+				SET logevent.ModuleName = moduleName;
+				SET logevent.Code = COALESCE(CAST(logRef.code AS INT), -1);
+				SET logevent.Description = logRef.description;
+				SET logevent.LogType = 'ERROR'; 
+				SET logevent.Datetime = dttm;
+				SET logevent.ExcList = logRef.excList;
+				SET logevent.MsgBody = msgBody;
+				SET logevent.JmsId = jmsId;
+				SET logevent.UUId = uuId;	
+				SET logevent.RawBody = rawBody;
+				SET logevent.FileName = fileName;
+				SET logevent.DefaultId = defaultId;
+				PROPAGATE TO TERMINAL 'out' DELETE NONE;
+				END IF;
+			END IF;
+			MOVE logRef NEXTSIBLING;
+			
+		END WHILE;
+		
+	 RETURN FALSE;
+	
+	END;
+	
+	
+	CREATE PROCEDURE getElasticTimeFrame() RETURNS CHARACTER
+	BEGIN
+		IF elasticIdxDivide = 'd' THEN
+			RETURN CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd');
+		ELSEIF elasticIdxDivide = 'm' THEN
+			RETURN CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM');
+		ELSE 
+			RETURN CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy');
+		END IF;
+	END;
+	
+	CREATE FUNCTION fillHttpRestDestination(IN OutputLocalEnvironment REFERENCE, IN requestURL CHARACTER, IN httpMethod CHARACTER, IN requestURI CHARACTER, IN timeout INTEGER) BEGIN
+		SET OutputLocalEnvironment.Destination.HTTP.RequestLine.HTTPVersion = 'HTTP/1.1';
+		SET OutputLocalEnvironment.Destination.HTTP.KeepAlive = TRUE;
+		SET OutputLocalEnvironment.Destination.HTTP.TimeoutMillis = timeout;
+		SET OutputLocalEnvironment.Destination.HTTP.RequestURL = requestURL || requestURI;
+		SET OutputLocalEnvironment.Destination.HTTP.RequestLine.Method = httpMethod;
+	END;
+		
+	CREATE PROCEDURE createJSONDomain(IN outRoot REFERENCE)
+	BEGIN
+		IF FIELDNAME(outRoot.JSON) IS NULL THEN
+			CREATE LASTCHILD OF outRoot DOMAIN 'JSON' NAME 'JSON';
+		END IF;
+	END;
+	
+END MODULE;

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmTimeoutControl.msgnode="ComIbmTimeoutControl.msgnode" xmlns:ComIbmTimeoutNotification.msgnode="ComIbmTimeoutNotification.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:pochtabank_common_utils_logging_AddLog.subflow="pochtabank/common/utils/logging/AddLog.subflow"
+    xmlns:pochtabank_common_utils_logging_SendLogToQueue.subflow="pochtabank/common/utils/logging/SendLogToQueue.subflow" xmlns:pochtabank_common_utils_senders_RetryProcessAfterWS.subflow="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow" xmlns:pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow" xmlns:pochtabank_srvefrsb_v2_srv_utils_pochtabnak_srvefrsb_v2_adp_efrsb.subflow="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow"
+    xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors.msgflow"
+    nsPrefix="pochtabank_srvefrsb_v2_srv_pochtabank_srvefrsb_v2_srv_getdebtors.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.NotifInicQName" name="NotifInicQName" lowerBound="1" defaultValueLiteral="LETOBANK.SRV.SRVLOG.TIMER">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.FatalQName" name="FatalQName" defaultValueLiteral="LETOBANK.SRV.FATAL">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ToApexQName" name="ToApexQName" defaultValueLiteral="LETOBANK.ADP.SRVEFRSB.V1.REQ">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ToLoggerQName" name="ToLoggerQName" defaultValueLiteral="LOG_TO_ELASTIC">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueOut" name="AppReplyToQueueOut" lowerBound="1" defaultValueLiteral="LETOBANK.ADP.SRVEFRSB.V1.RETRY">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="LETOBANK.SRV.SHARED.RETRY">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueIn" name="AppReplyToQueueIn" lowerBound="1" defaultValueLiteral="LETOBANK.ADP.SRVEFRSB.V1.RETRY">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.moduleName" name="moduleName" lowerBound="1" defaultValueLiteral="SRVEFRSB">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Password" name="Password" lowerBound="1" defaultValueLiteral="61D8F1">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Login" name="Login" lowerBound="1" defaultValueLiteral="Groshev3">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Proxy" name="Proxy" defaultValueLiteral="127.0.0.1:3128">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Timeout" name="Timeout" defaultValueLiteral="30000">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.URL" name="URL" lowerBound="1" defaultValueLiteral="http://bankrot.fedresurs.ru/MessageService/WebService.svc">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.DEFAULT_DELAY" name="DEFAULT_DELAY" lowerBound="1" defaultValueLiteral="1">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.DEFAULT_RETRY" name="DEFAULT_RETRY" lowerBound="1" defaultValueLiteral="3">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.srvName" name="srvName" lowerBound="1" defaultValueLiteral="SRVEFRSB">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.tableConfigsName" name="tableConfigsName" lowerBound="1" defaultValueLiteral="ESB_SENDERS_CONFIGURATION">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.dbSource" name="dbSource" lowerBound="1" defaultValueLiteral="SQLSERVERDB">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.MSSQLDataSource" name="MSSQLDataSource" defaultValueLiteral="SQLSERVERDB">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="pochtabank_srvefrsb_v2_srv_getdebtors" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVEFRSB.App/icons/full/obj16/pochtabank_srvefrsb_v2_srv_getdebtors.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVEFRSB.App/icons/full/obj30/pochtabank_srvefrsb_v2_srv_getdebtors.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmMQInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="14,31" queueName="LETOBANK.SRV.SRVLOG.TIMER" messageDomainProperty="XMLNSC">
+        <translation xmi:type="utility:ConstantString" string="MQ Input"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTimeoutControl.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_9" location="75,31" uniqueIdentifier="requestTimer" requestLocation="InputRoot.XMLNSC.TimeoutRequest" messageDomain="XMLNSC">
+        <translation xmi:type="utility:ConstantString" string="Timeout Control"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_10" location="92,89" queueName="LETOBANK.SRV.FATAL">
+        <translation xmi:type="utility:ConstantString" string="Fatal"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTimeoutNotification.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_11" location="10,149" uniqueIdentifier="requestTimer" operationMode="controlled" timeoutInterval="180">
+        <translation xmi:type="utility:ConstantString" string="Notification"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_15" location="162,208" dataSource="SQLSERVERDB" computeExpression="esql://routine/pochtabank.srvefrsb.v2.srv.esql#pochtabank_srvefrsb_srv_prepare_req.Main">
+        <translation xmi:type="utility:ConstantString" string="Prepare First Request"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_21" location="684,140" computeExpression="esql://routine/pochtabank.srvefrsb.v2.srv.esql#pochtabank_srvefrsb_srv_prepare_resp.Main">
+        <translation xmi:type="utility:ConstantString" string="Prepare Response"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_14" location="863,142" queueName="LETOBANK.ADP.SRVEFRSB.V1.REQ">
+        <translation xmi:type="utility:ConstantString" string="To APEX Flow"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="82,208" isErrorLog="false" logMessage="Процесс выгрузки банкротов инициирован" moduleName="SRVEFRSB">
+        <translation xmi:type="utility:ConstantString" string="Log: Proc Init"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_13" location="281,209" isErrorLog="false" attachBody="true" logMessage="Попытка вызова веб-сервиса ЕФРСБ" moduleName="SRVEFRSB">
+        <translation xmi:type="utility:ConstantString" string="Log: Request"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_16" location="602,140" isErrorLog="false" logMessage="Получен корректный ответ" moduleName="SRVEFRSB">
+        <translation xmi:type="utility:ConstantString" string="Log: Response"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_17" location="672,302" isErrorLog="false" attachBody="true" logLevel="10" logMessage="Ошибка вызова веб-сервиса ЕФРСБ" moduleName="SRVEFRSB">
+        <translation xmi:type="utility:ConstantString" string="Log: Error EFRSB Service"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_18" location="686,207" attachBody="true" logLevel="1" logMessage="Ошибка на уровне потока запроса банкротов" moduleName="SRVEFRSB">
+        <translation xmi:type="utility:ConstantString" string="Log: Error on Flow"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_SendLogToQueue.subflow:FCMComposite_1" xmi:id="FCMComposite_1_19" location="870,262" QueueLog="LOG_TO_ELASTIC">
+        <translation xmi:type="utility:ConstantString" string="To Logger"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_srvefrsb_v2_srv_utils_pochtabnak_srvefrsb_v2_adp_efrsb.subflow:FCMComposite_1" xmi:id="FCMComposite_1_5" location="483,209" Password="61D8F1">
+        <translation xmi:type="utility:ConstantString" string="GetDebtorRegister"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessAfterWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_7" location="583,260">
+        <translation xmi:type="utility:ConstantString" string="RetryProcessAfterWS"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_8" location="358,209">
+        <translation xmi:type="utility:ConstantString" string="RetryProcessBeforeWS"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_14" sourceNode="FCMComposite_1_21" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="FCMComposite_1_15" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="FCMComposite_1_13" sourceNode="FCMComposite_1_15" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_21" sourceNode="FCMComposite_1_16" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_15" targetNode="FCMComposite_1_19" sourceNode="FCMComposite_1_17" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_18" targetNode="FCMComposite_1_19" sourceNode="FCMComposite_1_18" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_19" sourceNode="FCMComposite_1_21" sourceTerminalName="OutTerminal.out1" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_16" targetNode="FCMComposite_1_16" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_20" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.Output1" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_21" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.Output2" targetTerminalName="InTerminal.Input1"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_22" targetNode="FCMComposite_1_17" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.Output2" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_23" targetNode="FCMComposite_1_18" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_24" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_13" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_25" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.NotifInicQName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.NotifInicQName" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+        <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.FatalQName">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.FatalQName" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+          <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.ToApexQName">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.ToApexQName" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+            <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.ToLoggerQName">
+              <propertyName xmi:type="utility:TranslatableString" key="Property.ToLoggerQName" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+              <propertyDescriptor groupName="Group.MQProps" configurable="true" userDefined="true" describedAttribute="Property.AppReplyToQueueOut">
+                <propertyName xmi:type="utility:TranslatableString" key="Property.AppReplyToQueueOut" bundleName="pochtabank/common/utils/senders/RetryDelay" pluginId="Pochtabank.COMMON.V1.lib"/>
+                <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.SharedRetryQueue">
+                  <propertyName xmi:type="utility:TranslatableString" key="Property.SharedRetryQueue" bundleName="pochtabank/common/utils/senders/RetryDelay" pluginId="Pochtabank.COMMON.V1.lib"/>
+                  <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.AppReplyToQueueIn">
+                    <propertyName xmi:type="utility:TranslatableString" key="Property.AppReplyToQueueIn" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                    <propertyDescriptor groupName="Group.LogProps" configurable="true" userDefined="true" describedAttribute="Property.moduleName">
+                      <propertyName xmi:type="utility:TranslatableString" key="Property.moduleName" bundleName="pochtabank/common/utils/logging/AddLog" pluginId="Pochtabank.COMMON.V1.lib"/>
+                      <propertyDescriptor groupName="Group.EFRSBServiceProps" configurable="true" userDefined="true" describedAttribute="Property.Password">
+                        <propertyName xmi:type="utility:TranslatableString" key="Property.Password" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
+                        <propertyDescriptor groupName="Group.EFRSBServiceProps" configurable="true" userDefined="true" describedAttribute="Property.Login">
+                          <propertyName xmi:type="utility:TranslatableString" key="Property.Login" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
+                          <propertyDescriptor groupName="Group.EFRSBServiceProps" configurable="true" userDefined="true" describedAttribute="Property.Proxy">
+                            <propertyName xmi:type="utility:TranslatableString" key="Property.Proxy" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
+                            <propertyDescriptor groupName="Group.EFRSBServiceProps" configurable="true" userDefined="true" describedAttribute="Property.Timeout">
+                              <propertyName xmi:type="utility:TranslatableString" key="Property.Timeout" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
+                              <propertyDescriptor groupName="Group.EFRSBServiceProps" configurable="true" userDefined="true" describedAttribute="Property.URL">
+                                <propertyName xmi:type="utility:TranslatableString" key="Property.URL" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
+                                <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_DELAY">
+                                  <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_DELAY" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                  <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_RETRY">
+                                    <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_RETRY" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                    <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.srvName">
+                                      <propertyName xmi:type="utility:TranslatableString" key="Property.srvName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                      <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.tableConfigsName">
+                                        <propertyName xmi:type="utility:TranslatableString" key="Property.tableConfigsName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                        <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.dbSource">
+                                          <propertyName xmi:type="utility:TranslatableString" key="Property.dbSource" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                          <propertyDescriptor groupName="Group.DBProps" configurable="true" describedAttribute="Property.MSSQLDataSource">
+                                            <propertyName xmi:type="utility:TranslatableString" key="Property.MSSQLDataSource" bundleName="pochtabank/srvefrsb/v2/srv/pochtabank_srvefrsb_v2_srv_getdebtors" pluginId="Pochtabank.SRVEFRSB.App"/>
+                                          </propertyDescriptor>
+                                        </propertyDescriptor>
+                                      </propertyDescriptor>
+                                    </propertyDescriptor>
+                                  </propertyDescriptor>
+                                </propertyDescriptor>
+                              </propertyDescriptor>
+                            </propertyDescriptor>
+                          </propertyDescriptor>
+                        </propertyDescriptor>
+                      </propertyDescriptor>
+                    </propertyDescriptor>
+                  </propertyDescriptor>
+                </propertyDescriptor>
+              </propertyDescriptor>
+            </propertyDescriptor>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.NotifInicQName" overriddenNodes="FCMComposite_1_6">
+      <overriddenAttribute href="ComIbmMQInput.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.FatalQName" overriddenNodes="FCMComposite_1_10">
+      <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.FatalQName" overriddenNodes="FCMComposite_1_19">
+      <overriddenAttribute href="pochtabank/common/utils/logging/SendLogToQueue.subflow#Property.QueueLogFatal"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.ToApexQName" overriddenNodes="FCMComposite_1_14">
+      <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.ToLoggerQName" overriddenNodes="FCMComposite_1_19">
+      <overriddenAttribute href="pochtabank/common/utils/logging/SendLogToQueue.subflow#Property.QueueLog"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.AppReplyToQueueOut" overriddenNodes="FCMComposite_1_7">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow#Property.AppReplyToQueueOut"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.SharedRetryQueue" overriddenNodes="FCMComposite_1_7">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow#Property.SharedRetryQueue"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.AppReplyToQueueIn" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.AppReplyToQueueIn"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_17 FCMComposite_1_18 FCMComposite_1_3 FCMComposite_1_13 FCMComposite_1_16">
+      <overriddenAttribute href="pochtabank/common/utils/logging/AddLog.subflow#Property.moduleName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.moduleName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_7">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow#Property.customModuleName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Password" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow#Property.Password"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Login" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow#Property.Login"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Proxy" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow#Property.Proxy"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Timeout" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow#Property.Timeout"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.URL" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow#Property.URL"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.DEFAULT_DELAY" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.DEFAULT_DELAY"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.DEFAULT_RETRY" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.DEFAULT_RETRY"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.srvName" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.srvName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.tableConfigsName" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.tableConfigsName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.dbSource" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.dbSource"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.MSSQLDataSource" overriddenNodes="FCMComposite_1_8">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow#Property.dataSource"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

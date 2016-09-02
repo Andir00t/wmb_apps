@@ -1,0 +1,34 @@
+BROKER SCHEMA pochtabank.srvefrsb.v2.srv.esql
+PATH pochtabank.common.utils;
+
+CREATE COMPUTE MODULE pochtabank_srvefrsb_srv_prepare_resp
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+
+		DECLARE ref REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body.*:GetDebtorRegisterResponse.*:GetDebtorRegisterResult.*:DebtorList.*:*;
+	    WHILE LASTMOVE(ref) DO
+			SET OutputRoot.XMLNSC = NULL;
+			CALL CreateMQRFH2Domain(OutputRoot);
+			SET OutputRoot.MQRFH2.usr.DateLastUpdate = Environment.usr.DateLastUpdate;
+			CALL CreateXMLNSCDomain(OutputRoot);
+			CREATE LASTCHILD OF OutputRoot.XMLNSC.GetDebtorRegisterResponse.GetDebtorRegisterResult.DebtorList NAME FIELDNAME(ref) ;
+			SET OutputRoot.XMLNSC.GetDebtorRegisterResponse.GetDebtorRegisterResult.DebtorList.* = ref;
+			PROPAGATE TO TERMINAL 'out' DELETE NONE;
+		 MOVE ref NEXTSIBLING;
+        END WHILE;
+		
+		IF EXISTS(InputRoot.XMLNSC.*:Envelope.*:Body.*:GetDebtorRegisterResponse.*:GetDebtorRegisterResult.*:DebtorList.*:*[]) THEN 
+			CALL SaveLogToNextFlow(OutputRoot, Environment);
+			SET OutputRoot.MQRFH2.usr.lastBankrupt = TRUE;
+			SET OutputRoot.XMLNSC = NULL;
+			PROPAGATE TO TERMINAL 'out';
+		ELSE
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 0, 'В выгрузке от ' || DateLastUpdate || ' банкротов не найдено');
+			PROPAGATE TO TERMINAL 'out1';
+		END IF;
+		
+		RETURN FALSE;	
+	END;
+
+END MODULE;

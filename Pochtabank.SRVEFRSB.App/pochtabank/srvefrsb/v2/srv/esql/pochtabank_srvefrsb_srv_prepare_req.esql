@@ -1,0 +1,48 @@
+BROKER SCHEMA pochtabank.srvefrsb.v2.srv.esql
+PATH pochtabank.srvefrsb.v2.srv.utils.esql, pochtabank.common.utils;
+
+DECLARE DateLastUpdate SHARED CHARACTER '';
+
+CREATE COMPUTE MODULE pochtabank_srvefrsb_srv_prepare_req
+	
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		DECLARE fmtStamp CHARACTER 'yyyy-MM-dd''T''HH:mm:ss';
+		DECLARE fmtDate CHARACTER 'yyyy-MM-dd';
+		DECLARE DLUDate,  DLUDBDate  DATE;
+		DECLARE DLUStamp, DLUDBStamp TIMESTAMP;
+		DECLARE DLUInt INTERVAL;
+		DECLARE cDate  DATE CURRENT_DATE;
+		DECLARE cStamp TIMESTAMP CURRENT_TIMESTAMP;
+		
+		IF isNullOrEmpty(DateLastUpdate) THEN
+		 
+		 SET DLUDate = CAST(CURRENT_DATE AS DATE FORMAT fmtDate);
+		 SET DLUStamp = CAST(CURRENT_TIMESTAMP AS TIMESTAMP FORMAT fmtStamp);
+		 SET DateLastUpdate = CAST(cStamp AS CHARACTER FORMAT fmtStamp);
+		 
+		END IF;
+		
+		DECLARE dbVal CHARACTER THE (SELECT ITEM PV.PARAM_VALUE FROM Database.dbo.ESB_PARAMS AS PV WHERE PV.SRVNAME = 'SRVEFRSB' AND PV.PARAM_NAME = 'lastReportDate' );
+		  
+		IF NOT isNullOrEmpty(dbVal) THEN
+		
+				SET DLUDBStamp =  CAST(dbVal AS TIMESTAMP FORMAT fmtStamp);
+				SET DLUDBDate  =  CAST(dbVal AS DATE FORMAT fmtStamp);	
+				IF (DLUDBDate < cDate) THEN
+						SET DLUDate  = DLUDBDate;
+						SET DLUStamp = DLUDBStamp;
+						SET DateLastUpdate = CAST(DLUStamp AS CHARACTER FORMAT fmtStamp);						
+				END IF;
+		END IF;
+		
+		SET Environment.usr.DateLastUpdate = DateLastUpdate;	
+		CALL CreateGetDebtorRegisterReq(OutputRoot, DateLastUpdate);
+		
+		 
+		RETURN TRUE;
+	END;
+	
+		
+END MODULE;

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmMQGet.msgnode="ComIbmMQGet.msgnode" xmlns:ComIbmTimeoutNotification.msgnode="ComIbmTimeoutNotification.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger.msgflow"
+    nsPrefix="pochtabank_common_utils_retry_pochtabank_common_utils_retryq_pinger.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="LETOBANK.SRV.SHARED.RETRY">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Ping_Interval_sec" name="Ping_Interval_sec" defaultValueLiteral="1">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="pochtabank_common_utils_retryq_pinger" bundleName="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger" pluginId="Letobank.UTILS.LOGGER_ES.V1.App"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Letobank.UTILS.LOGGER_ES.V1.App/icons/full/obj16/pochtabank_common_utils_retryq_pinger.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Letobank.UTILS.LOGGER_ES.V1.App/icons/full/obj30/pochtabank_common_utils_retryq_pinger.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmTimeoutNotification.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="96,130" uniqueIdentifier="uniqTimerId">
+        <translation xmi:type="utility:ConstantString" string="Resend Init"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQGet.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="302,130" queueName="LETOBANK.SRV.SHARED.RETRY" messageDomainProperty="XMLNSC" inputMQMDLocation="InputRoot.MQMD" browse="true" browseFirst="true">
+        <translation xmi:type="utility:ConstantString" string="Resend Queue Browse"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.RetryProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.SharedRetryQueue">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.SharedRetryQueue" bundleName="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger" pluginId="Letobank.UTILS.LOGGER_ES.V1.App"/>
+        <propertyDescriptor groupName="Group.RetryProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.TimeoutIntervalPropertyEditor" configurable="true" describedAttribute="Property.Ping_Interval_sec">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.Ping_Interval_sec" bundleName="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger" pluginId="Letobank.UTILS.LOGGER_ES.V1.App"/>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.SharedRetryQueue" overriddenNodes="FCMComposite_1_2">
+      <overriddenAttribute href="ComIbmMQGet.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.Ping_Interval_sec" overriddenNodes="FCMComposite_1_1">
+      <overriddenAttribute href="ComIbmTimeoutNotification.msgnode#Property.timeoutInterval"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

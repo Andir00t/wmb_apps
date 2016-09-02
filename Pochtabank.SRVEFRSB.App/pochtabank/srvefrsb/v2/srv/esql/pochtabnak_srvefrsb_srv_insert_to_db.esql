@@ -1,0 +1,183 @@
+BROKER SCHEMA pochtabank.srvefrsb.v2.srv.esql
+PATH pochtabank.srvefrsb.v2.srv.utils.esql;
+
+CREATE COMPUTE MODULE pochtabnak_srvefrsb_srv_insert_to_db
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+
+		DECLARE Debtor REFERENCE TO InputRoot.XMLNSC.GetDebtorRegisterResponse.GetDebtorRegisterResult.DebtorList;
+		MOVE Debtor FIRSTCHILD;
+		DECLARE CourtDecision REFERENCE TO Debtor.CourtDecision;
+		DECLARE debtorType CHARACTER FIELDNAME (Debtor);
+		DECLARE pattern CHARACTER 'yyyy-MM-dd''T''HH:mm:ss';
+
+		DECLARE LastMessageDate CHARACTER Debtor.*:LastMessageDate;
+		DECLARE LastReportDate CHARACTER Debtor.*:LastReportDate;
+		DECLARE DecisionDate CHARACTER CourtDecision.DecisionDate;
+		DECLARE DecisionDateTS GMTTIMESTAMP CURRENT_GMTTIMESTAMP;
+		DECLARE Id CHARACTER CourtDecision.DecisionTypeId;
+		IF (LastMessageDate <> '' AND LastMessageDate IS NOT NULL) THEN
+			IF CONTAINS(LastMessageDate, '.') THEN
+				SET LastMessageDate = SUBSTRING(LastMessageDate BEFORE '.');
+				SET LastMessageDate = CAST(LastMessageDate AS GMTTIMESTAMP FORMAT pattern);
+			ELSE
+				SET LastMessageDate = CAST(LastMessageDate AS GMTTIMESTAMP FORMAT pattern);
+			END IF;
+		END IF;
+		IF COALESCE(DecisionDate,' ')<>' ' then
+			Set DecisionDateTS = CAST(DecisionDate AS GMTTIMESTAMP FORMAT 'yyyy-MM-dd');
+		END IF;		
+
+		IF (LastReportDate <> '' AND LastReportDate IS NOT NULL) THEN
+			IF CONTAINS(LastReportDate, '.') THEN
+				SET LastReportDate = SUBSTRING(LastReportDate BEFORE '.');
+				SET LastReportDate = CAST(LastReportDate AS GMTTIMESTAMP FORMAT pattern);
+			ELSE
+				SET LastReportDate = CAST(LastReportDate AS GMTTIMESTAMP FORMAT pattern);
+			END IF;
+		END IF;
+
+
+		IF debtorType = 'DebtorPerson' THEN
+			DECLARE debtper_category CHARACTER Debtor.Category;
+			DECLARE debtper_categorycode character Debtor.CategoryCode;
+			DECLARE debtper_region character Debtor.Region;
+			DECLARE debtper_datelastmodif character Debtor.DateLastModif;
+			DECLARE debtper_inn character LEFT(Debtor.INN,10);
+			DECLARE debtper_bankruptid character Debtor.BankruptId;
+			DECLARE debtper_birthdate character Debtor.Birthdate;
+			DECLARE debtper_birthplace character Debtor.Birthplace;
+			DECLARE debtper_snils character Debtor.SNILS;
+			DECLARE debtper_lastname character Debtor.LastName;
+			DECLARE debtper_firstname character Debtor.FirstName;
+			DECLARE debtper_middlename character Debtor.MiddleName;
+			DECLARE debtper_address character Debtor.Address;
+			DECLARE debtper_ogrnip character ;
+			DECLARE debtper_namehistoryitem character Debtor.*:NameHistory.*:NameHistoryItem;
+			DECLARE debtper_egriplastname character Debtor.*:EGRIPDifferences.*:EGRIPLastName;
+			DECLARE debtper_egripfirstname character Debtor.*:EGRIPDifferences.*:EGRIPFirstName;
+			DECLARE debtper_egripmiddlename character Debtor.*:EGRIPDifferences.*:EGRIPMiddleName;
+			DECLARE debtper_egripogrnip character Debtor.*:EGRIPDifferences.*:EGRIPOGRNIP;
+			DECLARE debtper_egripaddress character Debtor.*:EGRIPDifferences.*:EGRIPADDRESS;		
+
+
+			INSERT INTO Database.REFERENCE_EDITOR.DIM_BANKRUPTS_TMP
+			(
+			debtper_category,
+			debtper_categorycode,
+			debtper_region,
+			debtper_datelastmodif,
+			debtper_inn,
+			debtper_bankruptid,
+			debtper_birthdate,
+			debtper_birthplace,
+			debtper_snils,
+			debtper_lastname,
+			debtper_firstname,
+			debtper_middlename,
+			debtper_address,
+			debtper_ogrnip,
+			debtper_namehistoryitem,
+			debtper_egriplastname,
+			debtper_egripfirstname,
+			debtper_egripmiddlename,
+			debtper_egripogrnip,
+			debtper_egripaddress,
+			debtper_lastmessagedate,
+			debtper_lastreportdate,
+			sys_mod_by,
+			bankrupt_law_dt,
+			law_decision_type_code)
+			VALUES
+			(
+			debtper_category,
+			debtper_categorycode,
+			debtper_region,
+			debtper_datelastmodif,
+			debtper_inn,
+			debtper_bankruptid,
+			debtper_birthdate,
+			debtper_birthplace,
+			debtper_snils,
+			debtper_lastname,
+			debtper_firstname,
+			debtper_middlename,
+			debtper_address,
+			debtper_ogrnip,
+			debtper_namehistoryitem,
+			debtper_egriplastname,
+			debtper_egripfirstname,
+			debtper_egripmiddlename,
+			debtper_egripogrnip,
+			debtper_egripaddress,
+			LastMessageDate,
+			LastReportDate,
+			'ESB_MQM',
+			DecisionDate,
+			Id);
+		ELSE
+			DECLARE debtco_category CHARACTER Debtor.Category;
+			DECLARE debtco_categorycode CHARACTER Debtor.CategoryCode;
+			DECLARE debtco_region CHARACTER Debtor.Region;
+			DECLARE debtco_datelastmodif CHARACTER Debtor.DateLastModif;
+			DECLARE debtco_inn CHARACTER LEFT(Debtor.INN,10);
+			DECLARE debtco_bankruptid CHARACTER Debtor.BankruptId;
+			DECLARE debtco_fullname CHARACTER Debtor.FullName;
+			DECLARE debtco_shortname CHARACTER Debtor.ShortName;
+			DECLARE debtco_ogrn CHARACTER Debtor.OGRN;
+			DECLARE debtco_legaladdress CHARACTER Debtor.LegalAddress;
+			DECLARE debtco_egruluraddress CHARACTER Debtor.*:EGRULDifferences.*:EGRULUrAddress;
+			DECLARE debtco_egrulshortname character Debtor.*:EGRULDifferences.*:EGRULShortName;
+			DECLARE debtco_egrulfullname character Debtor.*:EGRULDifferences.*:EGRULFullName;
+			DECLARE debtco_egrulinn character Debtor.*:EGRULDifferences.*:EGRULINN;			
+
+
+			INSERT INTO Database.REFERENCE_EDITOR.DIM_BANKRUPTS_TMP
+			(debtco_category,
+			debtco_categorycode,
+			debtco_region,
+			debtco_datelastmodif,
+			debtco_inn,
+			debtco_bankruptid,
+			debtco_fullname,
+			debtco_shortname,
+			debtco_ogrn,
+			debtco_legaladdress,
+			debtco_egrulshortname,
+			debtco_egrulfullname,
+			debtco_egruluraddress,
+			debtco_egrulinn,
+			debtco_lastmessagedate,
+			debtco_lastreportdate,
+			sys_mod_by,
+			bankrupt_law_dt,
+			law_decision_type_code)
+		
+			VALUES
+			(debtco_category,
+			debtco_categorycode,
+			debtco_region,
+			debtco_datelastmodif,
+			debtco_inn,
+			debtco_bankruptid,
+			debtco_fullname,
+			debtco_shortname,
+			debtco_ogrn,
+			debtco_legaladdress,
+			debtco_egrulshortname,
+			debtco_egrulfullname,
+			debtco_egruluraddress,
+			debtco_egrulinn,
+			LastMessageDate,
+			LastReportDate,
+			'ESB_MQM',
+			DecisionDate,
+			Id);
+		END IF;	
+		
+			 
+
+		RETURN TRUE;
+	END;
+
+END MODULE;

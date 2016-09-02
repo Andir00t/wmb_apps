@@ -1,0 +1,31 @@
+
+
+Импорт файла: C:\Users\as.popov\Desktop\interfaxWs.wsdl
+
+Parsing wsdl binding {http://tempuri.org/}BasicHttpBinding_IMessageService.
+Parsing wsdl binding input GetMessageIds.
+Parsing wsdl binding output GetMessageIds.
+Parsing wsdl binding input GetMessageContent.
+Parsing wsdl binding output GetMessageContent.
+Parsing wsdl binding input GetTradeMessageContent.
+Parsing wsdl binding output GetTradeMessageContent.
+Parsing wsdl binding input GetTradeMessages.
+Parsing wsdl binding output GetTradeMessages.
+Parsing wsdl binding input GetTradeMessagesByTrade.
+Parsing wsdl binding output GetTradeMessagesByTrade.
+Parsing wsdl binding input GetArbitrManagerRegister.
+Parsing wsdl binding output GetArbitrManagerRegister.
+Parsing wsdl binding input GetDebtorRegister.
+Parsing wsdl binding output GetDebtorRegister.
+Parsing wsdl binding input GetCompanyTradeOrganizerRegister.
+Parsing wsdl binding output GetCompanyTradeOrganizerRegister.
+Parsing wsdl binding input GetSroRegister.
+Parsing wsdl binding output GetSroRegister.
+Parsing wsdl binding input GetDebtorByIdBankrupt.
+Parsing wsdl binding output GetDebtorByIdBankrupt.
+Parsing wsdl binding input GetDebtorsByLastPublicationPeriod.
+Parsing wsdl binding output GetDebtorsByLastPublicationPeriod.
+Parsing wsdl binding input GetDebtorMessagesContentForPeriodByIdBankrupt.
+Parsing wsdl binding output GetDebtorMessagesContentForPeriodByIdBankrupt.
+Parsing wsdl binding input GetDebtorReportsContentForPeriodByIdBankrupt.
+Parsing wsdl binding output GetDebtorReportsContentForPeriodByIdBankrupt.
