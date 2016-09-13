@@ -1,10 +1,11 @@
 BROKER SCHEMA pochtabank.adpesia.v1.esql
-PATH pochtabank.adpesia.v1.esql.utils;
+PATH pochtabank.adpesia.v1.esql.utils, pochtabank.common.utils;
 
 CREATE COMPUTE MODULE pochtabank_adpesia_v1_getesia_result_req_Check_MQMD
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	BEGIN
-	
+		
+		CALL RestoreLogToFlow(InputRoot, Environment);	
 		CALL SaveRFH2InputMsgUsr(InputRoot, Environment);
 		CALL SaveRFH2sys(InputRoot, Environment);
 		DECLARE intMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:OutputMessage.(XML.Element)*:*);
@@ -15,6 +16,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_getesia_result_req_Check_MQMD
 		CALL CreateInputMessage('verify_res', InputRoot, OutputRoot);
 		ELSE END CASE;
 		
+		CALL AddInCodeLogSection(Environment, OutputRoot, TRUE, 'ADPESIA', 0, 0, 'Трансформация в формат ЕСИА Result');
 		RETURN TRUE;
 	END;
 

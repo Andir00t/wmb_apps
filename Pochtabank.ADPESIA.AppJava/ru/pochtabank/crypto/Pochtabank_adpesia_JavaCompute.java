@@ -145,8 +145,7 @@ public class Pochtabank_adpesia_JavaCompute extends MbJavaComputeNode {
 
 			keyStore = KeyStore.getInstance(STORETYPE);
 			keyStore.load(null, null);
-			privateKey = (PrivateKey) keyStore.getKey(ALIAS,
-					PASSWORD.toCharArray());
+			privateKey = (PrivateKey) keyStore.getKey(ALIAS, null); //PASSWORD.toCharArray());
 			cert = (X509Certificate) keyStore.getCertificate(ALIAS);
 
 		} catch (KeyStoreException e) {

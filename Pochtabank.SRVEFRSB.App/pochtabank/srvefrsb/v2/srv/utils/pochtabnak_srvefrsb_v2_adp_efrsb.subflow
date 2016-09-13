@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmJavaCompute.msgnode="ComIbmJavaCompute.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow" nsPrefix="pochtabank_srvefrsb_v2_srv_utils_pochtabnak_srvefrsb_v2_adp_efrsb.subflow">
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmJavaCompute.msgnode="ComIbmJavaCompute.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb.subflow"
+    nsPrefix="pochtabank_srvefrsb_v2_srv_utils_pochtabnak_srvefrsb_v2_adp_efrsb.subflow">
   <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
     <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Login" name="Login" lowerBound="1" defaultValueLiteral="Groshev3">
@@ -24,7 +26,7 @@
     <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVEFRSB.App/icons/full/obj16/pochtabnak_srvefrsb_v2_adp_efrsb.gif"/>
     <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVEFRSB.App/icons/full/obj30/pochtabnak_srvefrsb_v2_adp_efrsb.gif"/>
     <composition>
-      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="166,122">
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="163,122">
         <translation xmi:type="utility:TranslatableString" key="InTerminal.Input" bundleName="pochtabank/srvefrsb/v2/srv/utils/pochtabnak_srvefrsb_v2_adp_efrsb" pluginId="Pochtabank.SRVEFRSB.App"/>
       </nodes>
       <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="424,123">

@@ -20,10 +20,10 @@ CREATE COMPUTE MODULE pochtabank_srvefrsb_srv_prepare_second_req
 				UPDATE Database.dbo.ESB_PARAMS AS D
 				SET PARAM_VALUE = CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd''T''HH:mm:ss')
 				WHERE (D.SRVNAME = 'SRVEFRSB') AND (D.PARAM_NAME = 'lastReportDate');
-				CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 0, 'За: ' || InputRoot.MQRFH2.usr.DateLastUpdate || ' выгружено банкротов: ' || CAST(BankruptCount AS CHARACTER));
+				CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 0, 0, 'За: ' || InputRoot.MQRFH2.usr.DateLastUpdate || ' выгружено банкротов: ' || CAST(BankruptCount AS CHARACTER));
 				PROPAGATE TO TERMINAL 'out1';
 			ELSE
-				CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 10, 'Во время работы возникли ошибки');
+				CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 10, 0, 'Во время работы возникли ошибки');
 				PROPAGATE TO TERMINAL 'out1';
 			END IF;	
 		SET BankruptCount = 0;

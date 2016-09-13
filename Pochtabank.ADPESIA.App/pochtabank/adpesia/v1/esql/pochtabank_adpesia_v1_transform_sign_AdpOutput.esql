@@ -39,7 +39,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpOutput
 			OR EXISTS(InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData.*:fault[])
 			OR EXISTS(InputRoot.SOAP.*:Body.*:IdentificationResultResponse.*:MessageData.*:AppData.*:fault[])
 			OR EXISTS(InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData.*:fault[]) THEN
-			IF (isNullOrEmpty(InputRoot.SOAP.*:Body.(XML.Element)*:*) OR respMethod = 'Fault' OR respMethod = 'fault') THEN
+			IF (isNullOrEmpty(InputRoot.SOAP.*:Body.*:*) OR respMethod = 'Fault' OR respMethod = 'fault') THEN
 			SET respMethod = FIELDNAME(Environment.usr.sender.inputMsg.*:*.(XML.Element)*:*);
 			END IF;
 			CALL CreateFaultMessage(respMethod, InputRoot, OutputRoot);
@@ -54,6 +54,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpOutput
 			CALL CreateMQRFH2DomainWithReplyToQ(OutputRoot, Environment.usr.sys.ReplytoQ);
 			CALL RestoreRFH2InputMsgUsr(InputRoot, OutputRoot, Environment);
 			CALL RestoreRFH2sys(InputRoot, OutputRoot, Environment);
+			CALL SaveLogToNextFlow(OutputRoot, Environment);
 			PROPAGATE TO TERMINAL 'out';
 			RETURN FALSE;
 		ELSEIF operation = 'getIdentificationResult' OR operation = 'getVerificationResult' THEN

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="JCN_HOME/javacompute.jar"/>
+	<classpathentry kind="var" path="JCN_HOME/jplugin2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/as.popov/IBM/IntegrationToolkit90/workspace_ESIA/Pochtabank.SRVEFRSB.V2.Java/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/as.popov/IBM/IntegrationToolkit90/workspace_ESIA/Pochtabank.SRVEFRSB.V2.Java/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/as.popov/IBM/IntegrationToolkit90/workspace_ESIA/Pochtabank.SRVEFRSB.V2.Java/commons-logging-1.2.jar"/>
+	<classpathentry kind="con" path="com.ibm.etools.mft.uri.classpath.MBProjectReference"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

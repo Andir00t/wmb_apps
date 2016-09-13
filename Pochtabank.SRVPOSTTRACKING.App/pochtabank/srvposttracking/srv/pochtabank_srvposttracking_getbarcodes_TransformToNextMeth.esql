@@ -39,4 +39,3 @@ CREATE COMPUTE MODULE pochtabank_srvposttracking_getbarcodes_TransformToNextMeth
 	END;
 
 END MODULE;
-		    

@@ -59,7 +59,7 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.tableConfigsName" name="tableConfigsName" lowerBound="1" defaultValueLiteral="ESB_SENDERS_CONFIGURATION">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.KeyStoreAlias" name="KeyStoreAlias" lowerBound="1" defaultValueLiteral="RaUser-913a59f4-cbd5-46fb-899e-325cb8030d21">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.KeyStoreAlias" name="KeyStoreAlias" lowerBound="1" defaultValueLiteral="SMEV_ESIA">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.KeyStorePass" name="KeyStorePass" lowerBound="1" defaultValueLiteral="1234567890">
@@ -74,7 +74,7 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Proxy.internal_npcompiler" name="Proxy.internal_npcompiler">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL" name="webServiceURL" defaultValueLiteral="http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151/1.00">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL" name="webServiceURL" defaultValueLiteral="http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL.internal_npcompiler" name="webServiceURL.internal_npcompiler">
@@ -123,7 +123,7 @@
       <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_22" location="773,386" isErrorLog="false" attachBody="true" logMessage="Код ответа ЕСИА - 'PROCESSING'. Повторная отправка..." moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:PROCESSING Resp"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_23" location="875,262" isErrorLog="false" logMessage="Запрашивающей системе направлен ответ" moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_23" location="875,262" isErrorLog="false" attachBody="true" logMessage="Запрашивающей системе направлен ответ" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:SuccessResp"/>
       </nodes>
       <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_24" location="885,320" isErrorLog="false" attachBody="true" logLevel="10" logMessage="Запрашивающей системе направлен ответ Error/Fault" moduleName="ADPESIA">

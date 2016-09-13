@@ -24,7 +24,7 @@ CREATE COMPUTE MODULE pochtabank_srvefrsb_srv_prepare_resp
 			SET OutputRoot.XMLNSC = NULL;
 			PROPAGATE TO TERMINAL 'out';
 		ELSE
-			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 0, 'В выгрузке от ' || DateLastUpdate || ' банкротов не найдено');
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVEFRSB', 0, 0, 'В выгрузке от ' || DateLastUpdate || ' банкротов не найдено');
 			PROPAGATE TO TERMINAL 'out1';
 		END IF;
 		

@@ -14,7 +14,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 	WHEN 'IdentificationRequest' THEN	
 				
 		DECLARE identifReqest BLOB;
-		SET identifReqest = CreateESIAReqest('Identification', InputRoot);
+		SET identifReqest = CreateESIARequest('Identification', InputRoot);
 		CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(identifReqest, GetDefaultEncoding(), GetDefaultCCSID());
 		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:IdentificationRequest;
 		DECLARE passportSeries CHARACTER inputBody.*:passportSeries;
@@ -41,7 +41,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 	WHEN 'VerificationRequest' THEN
 		
 		DECLARE verifReqest BLOB;
-		SET verifReqest = CreateESIAReqest('Verification', InputRoot);
+		SET verifReqest = CreateESIARequest('Verification', InputRoot);
 	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(verifReqest, GetDefaultEncoding(), GetDefaultCCSID());
 		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:VerificationRequest;
 		DECLARE passportSeries CHARACTER inputBody.*:passportSeries;
@@ -62,14 +62,14 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 	WHEN 'IdentificationResultReq' THEN
 		
 		DECLARE identifResultReq BLOB;
-		SET identifResultReq = CreateESIAReqest('IdentificationResult', InputRoot);
+		SET identifResultReq = CreateESIARequest('IdentificationResult', InputRoot);
 	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(identifResultReq, GetDefaultEncoding(), GetDefaultCCSID());
 		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:IdentificationResultReq;
 		DECLARE requestId CHARACTER inputBody.*:requestId;
 		DECLARE smsCode CHARACTER inputBody.*:smsCode;
 		DECLARE outputBody REFERENCE TO OutputRoot.XMLNSC.*:Envelope.*:Body.*:IdentificationResult.*:MessageData.*:AppData;
 		SET outputBody.*:requestId = requestId;
-		SET outputBody.*:smsCode = smsCode;
+		SET outputBody.*:smsCode = '05586784'; -- smsCode;
 		IF NOT isNullOrEmpty(InputRoot.MQMD.ReplyToQ) THEN
 		CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
 		END IF;
@@ -77,7 +77,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 	WHEN 'VerificationResultReq' THEN
 		
 		DECLARE verifResultReq BLOB;
-		SET verifResultReq = CreateESIAReqest('VerificationResult', InputRoot);
+		SET verifResultReq = CreateESIARequest('VerificationResult', InputRoot);
 	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(verifResultReq, GetDefaultEncoding(), GetDefaultCCSID());
 		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:VerificationResultReq;
 		DECLARE requestId CHARACTER inputBody.*:requestId;
@@ -89,6 +89,7 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 						
 	ELSE END CASE;
 		
+		CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'ADPESIA', 0, 0, 'Трансформация в формат ЕСИА');
 		RETURN TRUE;
 	END;
 	
