@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmSOAPRequest.msgnode="ComIbmSOAPRequest.msgnode" xmlns:ComIbmTimeoutControl.msgnode="ComIbmTimeoutControl.msgnode" xmlns:ComIbmTimeoutNotification.msgnode="ComIbmTimeoutNotification.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:pochtabank_common_utils_logging_AddLog.subflow="pochtabank/common/utils/logging/AddLog.subflow"
+    xmlns:pochtabank_common_utils_logging_SendLogToQueue.subflow="pochtabank/common/utils/logging/SendLogToQueue.subflow" xmlns:pochtabank_common_utils_senders_RetryProcessAfterWS.subflow="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow" xmlns:pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow="pochtabank/common/utils/senders/RetryProcessBeforeWS.subflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/srvposttracking/srv/pochtabank_srvposttracking_getbarcodes.msgflow"
+    nsPrefix="pochtabank_srvposttracking_srv_pochtabank_srvposttracking_getbarcodes.msgflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <translation xmi:type="utility:TranslatableString" key="pochtabank_srvposttracking_getbarcodes" bundleName="pochtabank/srvposttracking/srv/pochtabank_srvposttracking_getbarcodes" pluginId="Pochtabank.SRVPOSTTRACKING.App"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVPOSTTRACKING.App/icons/full/obj16/pochtabank_srvposttracking_getbarcodes.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.SRVPOSTTRACKING.App/icons/full/obj30/pochtabank_srvposttracking_getbarcodes.gif"/>
+    <composition>
+      <nodes xmi:type="ComIbmTimeoutControl.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="148,43" uniqueIdentifier="postTimer" requestLocation="InputRoot.XMLNSC.TimeoutRequest" messageDomain="XMLNSC">
+        <translation xmi:type="utility:ConstantString" string="Timeout Control"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_2" location="67,43" queueName="POST.TIMER" messageDomainProperty="XMLNSC">
+        <translation xmi:type="utility:ConstantString" string="MQ Input"/>
+      </nodes>
+      <nodes xmi:type="ComIbmTimeoutNotification.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_3" location="61,144" uniqueIdentifier="postTimer" operationMode="controlled" timeoutInterval="180">
+        <translation xmi:type="utility:ConstantString" string="Notification"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="257,145" dataSource="SQLPOSTTRACK" computeExpression="esql://routine/pochtabank.srvposttracking.srv#pochtabank_srvposttracking_getbarcodes_GetBarcodesByBatch.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="GetBarcodesByBatch"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_12" location="575,108" computeExpression="esql://routine/pochtabank.srvposttracking.srv#pochtabank_srvposttracking_getbarcodes_TransformToNextMeth.Main" computeMode="destinationAndMessage">
+        <translation xmi:type="utility:ConstantString" string="TransformToNextMeth"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_13" location="665,41" queueName="POST.CALLBACK" destinationMode="list">
+        <translation xmi:type="utility:ConstantString" string="ToGetByticketFlow"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_6" location="147,144" isErrorLog="false" logMessage="Процесс актуализации статусов доставки карт инициирован" moduleName="SRVPOSTTRACKING">
+        <translation xmi:type="utility:ConstantString" string="Log: Inic Process"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessAfterWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_8" location="576,191" customModuleName="SRVPOSTTRACKING" AppReplyToQueueOut="LETOBANK.SRV.SRVPOSTTRACKING.V1.RETRY" SharedRetryQueue="LETOBANK.SRV.SHARED.RETRY">
+        <translation xmi:type="utility:ConstantString" string="RetryProcessAfterWS"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_9" location="377,145" moduleName="SRVPOSTTRACKING" AppReplyToQueueIn="LETOBANK.SRV.SRVPOSTTRACKING.V1.RETRY">
+        <translation xmi:type="utility:ConstantString" string="RetryProcessBeforeWS"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_10" location="758,109" attachBody="true" logLevel="1" logMessage="Ошибка на уровне потока GetBarcodes" moduleName="SRVPOSTTRACKING">
+        <translation xmi:type="utility:ConstantString" string="Log: Failure"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_11" location="762,195" attachBody="true" logLevel="10" logMessage="Веб-сервис ответил сообщением Fault (GetTicket)" moduleName="SRVPOSTTRACKING">
+        <translation xmi:type="utility:ConstantString" string="Log: Fault"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_SendLogToQueue.subflow:FCMComposite_1" xmi:id="FCMComposite_1_14" location="865,152" QueueLog="LOG_TO_ELASTIC">
+        <translation xmi:type="utility:ConstantString" string="To Logger"/>
+      </nodes>
+      <nodes xmi:type="ComIbmSOAPRequest.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_15" location="502,146" wsdlFileName="postTrackWS.wsdl" selectedPortType="FederalClient" selectedBinding="ItemDataServicePortBinding" selectedOperation="getTicket" selectedPort="ItemDataServicePort" targetNamespace="http://fclient.russianpost.org" useHTTPTransport="true" webServiceURL="https://tracking.russianpost.ru/fc" sslProtocol="TLS">
+        <translation xmi:type="utility:ConstantString" string="GetTicket"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_15" targetNode="FCMComposite_1_13" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_7" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_11" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.Output2" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_14" sourceNode="FCMComposite_1_10" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_14" sourceNode="FCMComposite_1_11" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_13" targetNode="FCMComposite_1_15" sourceNode="FCMComposite_1_9" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_15" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_16" targetNode="FCMComposite_1_8" sourceNode="FCMComposite_1_15" sourceTerminalName="OutTerminal.fault" targetTerminalName="InTerminal.Input1"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_24" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_25" targetNode="FCMComposite_1_12" sourceNode="FCMComposite_1_15" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_26" targetNode="FCMComposite_1_12" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out1" targetTerminalName="InTerminal.in">
+        <bendPoints>102,-47,-218,-10</bendPoints>
+      </connections>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_27" targetNode="FCMComposite_1_14" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out2" targetTerminalName="InTerminal.Ввод">
+        <bendPoints>106,82,-494,69</bendPoints>
+        <bendPoints>516,79,-85,72</bendPoints>
+      </connections>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_28" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_12" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_29" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_13" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_30" targetNode="FCMComposite_1_10" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Ввод">
+        <bendPoints>103,-72,-384,-36</bendPoints>
+        <bendPoints>291,-71,-196,-35</bendPoints>
+        <bendPoints>396,-71,-91,-35</bendPoints>
+      </connections>
+    </composition>
+    <propertyOrganizer/>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

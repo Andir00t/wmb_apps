@@ -1,0 +1,31 @@
+BROKER SCHEMA pochtabank.srvposttracking.srv
+PATH pochtabank.common.utils;
+
+CREATE COMPUTE MODULE pochtabank_srvposttracking_getstatus_Compute
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		IF (InputRoot.MQRFH2.usr.lastBatch = TRUE) THEN
+		   IF CAST(InputRoot.MQRFH2.usr.barcodeCount AS INTEGER) = OutMsgsCount THEN
+			 CALL RestoreLogToFlow(InputRoot, Environment);
+			 CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVPOSTTRACKING', 0, 0, 'Сформировано ответов. Всего: ' || CAST(OutMsgsCount AS CHARACTER) 
+			   																	       || '. С информацией о статусе доставки: ' || CAST(SuccessItemsCount AS CHARACTER)
+			   																	      || '. Без информации о статусе доставки: ' || CAST(ErrorItemsCount AS CHARACTER));
+			 SET OutMsgsCount = 0;
+			 SET ErrorItemsCount = 0;
+			 SET SuccessItemsCount = 0;	   
+			 PROPAGATE TO TERMINAL 'out1';
+		  ELSE
+		   	 SET OutputRoot = InputRoot;
+		   	 CALL CreateMQMDDomainWithExpiry(OutputRoot, 100, 'POST.STATUS.IN');
+		   	 SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'LETOBANK.SRV.SHARED.RETRY';
+			 PROPAGATE TO TERMINAL 'out2';
+		  END IF;
+		ELSE
+		  SET OutputRoot = InputRoot;
+		  PROPAGATE TO TERMINAL 'out';
+		END IF;
+		RETURN FALSE;
+	END;
+
+END MODULE;

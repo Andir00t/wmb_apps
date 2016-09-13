@@ -1,0 +1,42 @@
+BROKER SCHEMA pochtabank.srvposttracking.srv
+PATH pochtabank.common.utils;
+
+CREATE COMPUTE MODULE pochtabank_srvposttracking_getbarcodes_TransformToNextMeth
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		IF (Environment.usr.lastBatch = TRUE) THEN
+			CALL SaveLogToNextFlow(OutputRoot, Environment);
+			SET OutputRoot.MQRFH2.usr.lastBatch = Environment.usr.lastBatch;
+			SET OutputRoot.MQRFH2.usr.barcodeCount = Environment.usr.barcodeCount;
+			CALL CreateMQMDDomainWithExpiry(OutputRoot, 300, 'POST.STATUS.IN');
+	        SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'LETOBANK.SRV.SHARED.RETRY';
+			PROPAGATE TO TERMINAL 'out'; 
+		ELSE
+			DECLARE CustomCorrelId BLOB GUIDASBLOB();
+			DECLARE ticket CHARACTER InputRoot.SOAP.*:Body.*:ticketResponse.value;
+		    CALL CreateMQRFH2Domain(OutputRoot);
+			CALL CreateXMLNSCDomain(OutputRoot);
+			SET OutputRoot.XMLNSC.soapenv:Envelope.(XMLNSC.NamespaceDecl)xmlns:soapenv = soapenv;
+			SET OutputRoot.XMLNSC.soapenv:Envelope.(XMLNSC.NamespaceDecl)xmlns:pos = pos;
+			CREATE FIELD OutputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.pos:answerByTicketRequest;
+			DECLARE answerByTicketRequest REFERENCE TO OutputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.pos:answerByTicketRequest;
+			SET answerByTicketRequest.ticket = ticket;
+			SET answerByTicketRequest.login = login ;
+			SET answerByTicketRequest.password = password;
+			SET OutputRoot.MQRFH2.usr.BarcodesList = Environment.Variables.BarcodesList;
+			SET OutputRoot.MQRFH2.usr.CallBack.CorrelID = CustomCorrelId;
+			SET OutputRoot.MQMD.CorrelId = CustomCorrelId;
+			SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'POST.CALLBACK';
+			PROPAGATE TO TERMINAL 'out' DELETE NONE;
+			
+			DELETE FIELD OutputRoot.MQRFH2.usr.BarcodesList;
+			CALL CreateMQMDDomainWithExpiry(OutputRoot, 100, 'POST.STATUS.IN');
+	        SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'LETOBANK.SRV.SHARED.RETRY';
+		    PROPAGATE TO TERMINAL 'out';
+		END IF;		
+	  RETURN FALSE;
+	END;
+
+END MODULE;
+		    

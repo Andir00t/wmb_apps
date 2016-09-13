@@ -1,0 +1,61 @@
+BROKER SCHEMA pochtabank.srvposttracking.srv
+PATH pochtabank.common.utils;
+
+DECLARE OutMsgsCount SHARED INTEGER 0;
+DECLARE ErrorItemsCount SHARED INTEGER 0;
+DECLARE SuccessItemsCount SHARED INTEGER 0;
+
+
+CREATE COMPUTE MODULE pochtabank_srvposttracking_getstatus_TransformToOut
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		IF CAST(InputRoot.SOAP.*:Body.*:answerByTicketResponse.*:error.*:ErrorTypeID AS INTEGER) = 6 THEN
+			DECLARE CustomCorrelId BLOB GUIDASBLOB();
+			CALL CreateMQRFH2Domain(OutputRoot);
+			SET OutputRoot.MQRFH2.usr.BarcodesList = Environment.CallBack.MQRFH2.usr.BarcodesList;
+			SET OutputRoot.MQRFH2.usr.CallBack.CorrelID = CustomCorrelId;
+			SET OutputRoot.MQMD.CorrelId = CustomCorrelId;
+			SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'POST.CALLBACK';
+			PROPAGATE TO TERMINAL 'out' DELETE NONE;
+			
+			DELETE FIELD OutputRoot.MQRFH2.usr.BarcodesList;
+			CALL CreateMQMDDomainWithExpiry(OutputRoot, 300, 'POST.STATUS.IN');
+			CALL CreateXMLNSCDomain(OutputRoot);
+			SET OutputRoot.XMLNSC = Environment.CallBack.XMLNSC;
+			SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'LETOBANK.SRV.SHARED.RETRY';
+		    PROPAGATE TO TERMINAL 'out';
+		ELSE
+			
+			DECLARE itemRef REFERENCE TO InputRoot.SOAP.*:Body.*:answerByTicketResponse.*:value.*:Item[>];
+			CALL CreateXMLNSCDomain(OutputRoot);
+			WHILE LASTMOVE(itemRef) DO
+			  CREATE FIELD OutputRoot.XMLNSC.SRVPostTrackingResponse.value;
+			  DECLARE ref REFERENCE TO OutputRoot.XMLNSC.SRVPostTrackingResponse.value;
+			  DECLARE operationRef REFERENCE TO itemRef.*:Operation[<];  
+	          SET ref.ABSCardId = THE(SELECT ITEM C.ID FROM Environment.CallBack.MQRFH2.usr.BarcodesList.Barcode[] AS C 
+			        					WHERE C.BARCODE = FIELDVALUE(itemRef.Barcode));
+			  SET ref.TrackingNumber = FIELDVALUE(itemRef.Barcode);
+				  IF EXISTS(itemRef.*:Error[]) THEN
+		     	   	  SET ref.Error.ErrorTypeID = operationRef.*:Error.*:ErrorTypeID;
+				  	  SET ref.Error.ErrorName = operationRef.*:Error.*:ErrorName;
+				  	  SET ErrorItemsCount = ErrorItemsCount + 1;
+				  ELSE
+    				  SET ref.CardLogisticStatus = FIELDVALUE(operationRef.IndexOper);
+	    			  SET ref.CardDeliveryStatus = FIELDVALUE(operationRef.OperName);
+	    			  SET SuccessItemsCount = SuccessItemsCount + 1;
+				  END IF;
+			  SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'POST.STATUS.OUT';			  
+		   	  PROPAGATE TO TERMINAL 'out' DELETE NONE;
+		   	  SET OutputRoot.XMLNSC.SRVPostTrackingResponse.value = NULL;
+		   	  SET OutMsgsCount = OutMsgsCount + 1;
+	          MOVE itemRef NEXTSIBLING REPEAT NAME;
+		   END WHILE;
+		  
+		     
+		END IF;
+	RETURN FALSE;
+	
+	END;
+
+END MODULE;

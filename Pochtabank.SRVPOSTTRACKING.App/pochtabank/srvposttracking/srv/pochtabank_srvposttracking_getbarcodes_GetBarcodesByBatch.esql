@@ -1,0 +1,95 @@
+BROKER SCHEMA pochtabank.srvposttracking.srv
+PATH pochtabank.common.utils;
+
+DECLARE soapenv NAMESPACE 'http://schemas.xmlsoap.org/soap/envelope/';
+DECLARE pos NAMESPACE 'http://fclient.russianpost.org/postserver';
+DECLARE fcl NAMESPACE 'http://fclient.russianpost.org';
+DECLARE login EXTERNAL CHARACTER 'umrKHkRgGurDss';
+DECLARE password EXTERNAL CHARACTER '94jpGCZNsr00';
+DECLARE BatchSize EXTERNAL INTEGER 3;
+DECLARE BarcodeCount SHARED INTEGER 0;
+DECLARE BatchCount SHARED INTEGER 0;
+
+CREATE COMPUTE MODULE pochtabank_srvposttracking_getbarcodes_GetBarcodesByBatch
+			
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		CALL CreateXMLNSCDomain(OutputRoot);
+		SET OutputRoot.XMLNSC.soapenv:Envelope.(XMLNSC.NamespaceDecl)xmlns:soapenv = soapenv;
+		SET OutputRoot.XMLNSC.soapenv:Envelope.(XMLNSC.NamespaceDecl)xmlns:pos = pos;
+		SET OutputRoot.XMLNSC.soapenv:Envelope.(XMLNSC.NamespaceDecl)xmlns:fcl = fcl;
+		CREATE FIELD OutputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.pos:ticketRequest;
+		DECLARE TicketRequest REFERENCE TO OutputRoot.XMLNSC.soapenv:Envelope.soapenv:Body.pos:ticketRequest;
+		SET TicketRequest.login = login;
+		SET TicketRequest.password = password;
+	
+		
+        DECLARE BarcodeLlim INTEGER 1;
+        DECLARE BarcodeRlim INTEGER BatchSize;
+        
+        BarcodeLoop: LOOP
+           SET Environment.Variables.BarcodesList.Barcode[] =
+               PASSTHRU('SELECT BARCODE, ID FROM (SELECT ROW_NUMBER() OVER (ORDER BY BARCODE) AS rowindex, BARCODE, ID 
+               			 from POSTDB.dbo.SBL_POSTTRACK) AS EMP
+                         where rowindex >= ? and rowindex <= ?' TO Database.SQLPOSTTRACK
+                    VALUES(BarcodeLlim, BarcodeRlim));
+            DECLARE BarcodeRef REFERENCE TO Environment.Variables.BarcodesList.Barcode[>];
+            IF LASTMOVE(BarcodeRef) THEN
+                SET BarcodeLlim = BarcodeRlim + 1;
+                SET BarcodeRlim = BarcodeLlim + BatchSize - 1;
+            ELSE
+               LEAVE BarcodeLoop;
+            END IF;
+              WHILE LASTMOVE(BarcodeRef) DO
+               CREATE LASTCHILD OF TicketRequest.request NAMESPACE fcl NAME 'Item';
+				SET TicketRequest.request.fcl:Item[<].(XMLNSC.Attribute)Barcode = BarcodeRef.BARCODE;
+				SET BarcodeCount = BarcodeCount + 1; 
+				MOVE BarcodeRef NEXTSIBLING REPEAT NAME;
+			  END WHILE;
+			  PROPAGATE TO TERMINAL 'out' DELETE NONE;
+              SET TicketRequest.request = NULL;
+			  SET BatchCount = BatchCount + 1;		            
+        END LOOP BarcodeLoop;
+       
+	       IF BatchCount = 0 THEN
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVPOSTTRACKING', 10, 0, 'В исходной таблице не найдено данных');
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVPOSTTRACKING', 0, 0, 'Процесс завершен');
+			PROPAGATE TO TERMINAL 'out2';
+	       ELSE
+	       	CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVPOSTTRACKING', 0, 0, 'Получено записей из таблицы: ' || CAST(BarcodeCount AS CHARACTER));
+		    CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'SRVPOSTTRACKING', 0, 0, 'Сформировано запросов на актуализацию статусов: ' || CAST(BatchCount AS CHARACTER));
+		    SET Environment.usr.lastBatch = TRUE;
+		    SET Environment.usr.barcodeCount = BarcodeCount;
+			SET OutputRoot.XMLNSC = NULL;
+			PROPAGATE TO TERMINAL 'out1';
+	       END IF;
+       SET BarcodeCount = 0;
+	   SET BatchCount = 0; 
+       RETURN FALSE;
+	END;
+	
+END MODULE;
+
+CREATE COMPUTE MODULE pochtabank_srvposttracking_getbarcodes_GetBarcodesByBatch
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		-- CALL CopyMessageHeaders();
+		-- CALL CopyEntireMessage();
+		RETURN TRUE;
+	END;
+
+	CREATE PROCEDURE CopyMessageHeaders() BEGIN
+		DECLARE I INTEGER 1;
+		DECLARE J INTEGER;
+		SET J = CARDINALITY(InputRoot.*[]);
+		WHILE I < J DO
+			SET OutputRoot.*[I] = InputRoot.*[I];
+			SET I = I + 1;
+		END WHILE;
+	END;
+
+	CREATE PROCEDURE CopyEntireMessage() BEGIN
+		SET OutputRoot = InputRoot;
+	END;
+END MODULE;

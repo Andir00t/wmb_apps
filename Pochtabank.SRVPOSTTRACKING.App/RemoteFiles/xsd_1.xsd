@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://fclient.russianpost.org/postserver" version="1.0" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:ns1="http://fclient.russianpost.org" xmlns:tns="http://fclient.russianpost.org/postserver">
+
+<xsd:import namespace="http://fclient.russianpost.org" schemaLocation="xsd_2.xsd"/>
+
+<xsd:element name="LanguageData">
+<xsd:complexType>
+<xsd:sequence>
+<xsd:element maxOccurs="unbounded" name="Language">
+<xsd:complexType>
+<xsd:sequence/>
+<xsd:attribute name="name" type="xsd:string"/>
+<xsd:attribute name="code" type="xsd:string"/>
+</xsd:complexType>
+</xsd:element>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:element>
+
+<xsd:element ibmSchExtn:docRoot="true" name="answerByTicketRequest" type="tns:answerByTicketRequest"/>
+
+<xsd:element ibmSchExtn:docRoot="true" name="answerByTicketResponse" type="tns:answerByTicketResponse"/>
+
+<xsd:element ibmSchExtn:docRoot="true" name="ticketRequest" type="tns:ticketRequest"/>
+
+<xsd:element ibmSchExtn:docRoot="true" name="ticketResponse" type="tns:ticketResponse"/>
+
+<xsd:complexType name="ticketRequest">
+<xsd:sequence>
+<xsd:element name="request" type="ns1:file"/>
+<xsd:element name="login" type="xsd:string"/>
+<xsd:element name="password" type="xsd:string"/>
+<xsd:element default="RUS" minOccurs="0" name="language" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="answerByTicketRequest">
+<xsd:sequence>
+<xsd:element name="ticket" type="xsd:string"/>
+<xsd:element name="login" type="xsd:string"/>
+<xsd:element name="password" type="xsd:string"/>
+</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="answerByTicketResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="value" type="ns1:file"/>
+<xsd:element minOccurs="0" name="error" type="ns1:error"/>
+</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="ticketResponse">
+<xsd:sequence>
+<xsd:element minOccurs="0" name="value" type="xsd:string"/>
+<xsd:element minOccurs="0" name="error" type="ns1:error"/>
+</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>

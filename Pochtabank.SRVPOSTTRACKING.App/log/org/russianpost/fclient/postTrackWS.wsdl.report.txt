@@ -1,0 +1,33 @@
+
+
+Importing file: C:\Users\as.popov\Desktop\Coding\POST_Tracking\postTrackWS.wsdl
+
+
+The following is a list of WS-I warning messages found when importing:
+XSD: There is no xmlns declaration for namespace 'http://fclient.russianpost.org/postserver', Line: 5, Column: 1
+XSD: The location 'https://tracking.russianpost.ru/fc?xsd=2' has not been resolved because the import is unused, Line: 8, Column: 1
+
+
+The WSDL import will proceed with bindings ItemDataServicePortBinding.
+Creating wsdl schema document for file:///C:/Users/as.popov/Desktop/Coding/POST_Tracking/postTrackWS.wsdl.
+Parsing wsdl binding {http://fclient.russianpost.org}ItemDataServicePortBinding.
+Parsing wsdl binding input getTicket.
+Parsing wsdl binding output getTicket.
+Parsing wsdl binding input getResponseByTicket.
+Parsing wsdl binding output getResponseByTicket.
+Processing doc style for operation getTicket.
+Processing doc style for operation getResponseByTicket.
+Populating WSDL schema postTrackWS.xsd.
+Removing unnecessary import statement with namespace http://fclient.russianpost.org from schema postTrackWS_InlineSchema2.xsd.  This statement was not resolved and is never used.
+Creating file postTrackWS.xsd in the workspace.
+Creating file /Pochtabank.SRVPOSTTRACKING.App/xsd_1.xsd in the workspace.
+Creating file /Pochtabank.SRVPOSTTRACKING.App/xsd_2.xsd in the workspace.
+Copying source WSDL postTrackWS.wsdl to postTrackWS.wsdl.
+
+Elapsed time processing this message definition file: 1.027 seconds
+Number of warnings for this message definition file: 0
+
+
+Number of files processed: 1
+
+
