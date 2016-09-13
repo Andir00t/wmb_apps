@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.pochtabank.ru/xml/ESIAAdapterRequest" xmlns:e="http://www.pochtabank.ru/xml/ESIAAdapterRequest">
+  <xs:element name="InputMessage" type="e:InputMessage">
+
+  </xs:element>
+  <xs:element name="IdentificationRequest"
+  	type="e:IdentificationRequest">
+
+  </xs:element>
+  <xs:element name="VerificationRequest"
+  	type="e:VerificationRequest">
+
+  </xs:element>
+
+  <xs:element name="passportSeries" type="e:passportSeries">
+
+  </xs:element>
+  <xs:element name="passportNumber" type="e:passportNumber">
+
+  </xs:element>
+  <xs:element name="firstName" type="e:firstName">
+
+  </xs:element>
+  <xs:element name="lastName" type="e:lastName">
+
+  </xs:element>
+  <xs:element name="middleName" type="e:middleName" />
+  <xs:element name="mobile" type="e:mobile">
+
+  </xs:element>
+  <xs:element name="snils" type="e:snils">
+
+  </xs:element>
+  <xs:element name="inn" type="e:inn">
+
+  </xs:element>
+  <xs:element name="requestId" type="e:requestId">
+
+  </xs:element>
+
+
+
+  <xs:simpleType name="firstName">
+  	<xs:restriction base="xs:NCName">
+  		<xs:minLength value="1"></xs:minLength>
+  	</xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="IdentificationRequest">
+  	<xs:sequence>
+  		<xs:element ref="e:passportSeries"></xs:element>
+
+  		<xs:element ref="e:passportNumber"></xs:element>
+  		<xs:element ref="e:firstName"></xs:element>
+  		<xs:element ref="e:lastName"></xs:element>
+  		<xs:element ref="e:middleName"></xs:element>
+  		<xs:element ref="e:mobile"></xs:element>
+  		<xs:element ref="e:snils"></xs:element>
+  		<xs:element ref="e:inn"></xs:element>
+  		<xs:element ref="e:oms"></xs:element>
+  	</xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="InputMessage">
+    	<xs:choice minOccurs="1" maxOccurs="1">
+    		<xs:element ref="e:IdentificationRequest"></xs:element>
+    		<xs:element ref="e:VerificationRequest"></xs:element>
+    		<xs:element ref="e:IdentificationResultReq"></xs:element>
+    		<xs:element ref="e:VerificationResultReq"></xs:element>
+    	</xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="VerificationRequest">
+  	<xs:sequence>
+  		<xs:element ref="e:passportSeries"></xs:element>
+  		<xs:element ref="e:passportNumber"></xs:element>
+  		<xs:element ref="e:firstName"></xs:element>
+  		<xs:element ref="e:lastName"></xs:element>
+  		<xs:element ref="e:middleName"></xs:element>
+        <xs:element ref="e:oms"></xs:element>
+  	</xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="inn" >
+  	<xs:restriction base="xs:string">
+  		<xs:pattern value='\s*|\d{12}'></xs:pattern>
+
+  	</xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="lastName">
+    	<xs:restriction base="xs:NCName">
+    		<xs:minLength value="1"></xs:minLength>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="middleName">
+    	<xs:restriction base="xs:NCName"></xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:simpleType name="passportNumber">
+    	<xs:restriction base="xs:integer">
+    		<xs:pattern value="\d{6}"></xs:pattern>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="passportSeries">
+    	<xs:restriction base="xs:integer">
+    		<xs:pattern value="\d{4}"></xs:pattern>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="requestId">
+    	<xs:restriction base="xs:string">
+    		<xs:minLength value="1"></xs:minLength>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="snils">
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="\s*|\d{3}-\d{3}-\d{3} \d{2}"></xs:pattern>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+
+
+    <xs:simpleType name="mobile">
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="\s*|\+7\(\d{3}\)\d{7}"></xs:pattern>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="IdentificationResultReq"
+    	type="e:IdentificationResultReq">
+    </xs:element>
+    
+    <xs:complexType name="IdentificationResultReq">
+    	<xs:sequence>
+    		<xs:element ref="e:requestId"></xs:element>
+    		<xs:element ref="e:smsCode"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:element name="VerificationResultReq"
+    	type="e:VerificationResultReq">
+    </xs:element>
+    
+    <xs:complexType name="VerificationResultReq">
+    	<xs:sequence>
+    		<xs:element ref="e:requestId"></xs:element>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:element name="smsCode" type="e:smsCode"></xs:element>
+    
+    <xs:simpleType name="smsCode">
+    	<xs:restriction base="xs:string">
+    		<xs:minLength value="1"></xs:minLength>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="oms" type="e:oms"></xs:element>
+    
+    <xs:simpleType name="oms">
+    	<xs:restriction base="xs:string"></xs:restriction>
+    </xs:simpleType>
+</xs:schema>

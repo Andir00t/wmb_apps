@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6hudson-86  svn-revision#12773. --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.w3.org/2004/08/xop/include" xmlns:tns="http://www.w3.org/2004/08/xop/include">
+    <xsd:element name="Include" type="tns:Include"/>
+    <xsd:complexType name="Include">
+        <xsd:sequence>
+            <xsd:any maxOccurs="unbounded" minOccurs="0" namespace="##other"/>
+        </xsd:sequence>
+        <xsd:attribute name="href" type="xsd:anyURI" use="required"/>
+        <xsd:anyAttribute namespace="##other"/>
+    </xsd:complexType>
+</xsd:schema>

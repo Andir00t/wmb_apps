@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6hudson-86  svn-revision#12773. --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="urn://x-artefacts-smev-gov-ru/supplementary/commons/1.0.1" version="1.0.1" xmlns:tns="urn://x-artefacts-smev-gov-ru/supplementary/commons/1.0.1">
+	<xsd:group name="PhysicalPersonQualifiedName-ModelGroup">
+		<xsd:annotation>
+			<xsd:documentation>ФИО физического лица.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="FamilyName" type="tns:rus-100">
+				<xsd:annotation>
+					<xsd:documentation>Фамилия</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="FirstName" type="tns:rus-100">
+				<xsd:annotation>
+					<xsd:documentation>Имя</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" name="Patronymic" type="tns:rus-100">
+				<xsd:annotation>
+					<xsd:documentation>Отчество</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="PhysicalPersonIdentificationInformation-ModelGroup">
+		<xsd:annotation>
+			<xsd:documentation>Установочные данные физического лица: ФИО + дата и место рождения.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:group ref="tns:PhysicalPersonQualifiedName-ModelGroup"/>
+			<xsd:element name="BirthDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата рождения</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BirthPlace" type="tns:rus-and-num-500">
+				<xsd:annotation>
+					<xsd:documentation>Место рождения</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:simpleType name="GenderType">
+		<xsd:annotation>
+			<xsd:documentation>Пол.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="Male"/>
+			<xsd:enumeration value="Female"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="IdentityDocument" type="tns:AnyIdentityDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Документ, удостоверяющий личность</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="AnyIdentityDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Документ, удостоверяющий личность</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:group ref="tns:PrimaryIdentityDocument-ModelGroup"/>
+			<xsd:group ref="tns:WeakIdentityDocument-ModelGroup"/>
+			<xsd:group ref="tns:TemporaryIdentityDocument-ModelGroup"/>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:element name="PrimaryIdentityDocument" type="tns:PrimaryIdentityDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Основной документ, удостоверяющий личность.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="PrimaryIdentityDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Основной документ, удостоверяющий личность</xsd:documentation>
+		</xsd:annotation>
+		<xsd:group ref="tns:PrimaryIdentityDocument-ModelGroup"/>
+	</xsd:complexType>
+	<xsd:group name="PrimaryIdentityDocument-ModelGroup">
+		<xsd:annotation>
+			<xsd:documentation>Основной документ, удостоверяющие личность. Подходит для любых юр. действий.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="tns:PassportRF"/>
+			<xsd:element ref="tns:ForeignPassport"/>
+			<xsd:element ref="tns:ResidencePermitRF"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="WeakIdentityDocument-ModelGroup">
+		<xsd:annotation>
+			<xsd:documentation>Документы, удостоверяющие личность, ограниченного применения.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="tns:InternationalPassportRF"/>
+			<xsd:element ref="tns:MilitaryPassport"/>
+			<xsd:element ref="tns:SailorPassport"/>
+			<xsd:element ref="tns:SovietPassport"/>
+			<xsd:element ref="tns:BirthCertificate"/>
+			<xsd:element ref="tns:DrivingLicenseRF"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:group name="TemporaryIdentityDocument-ModelGroup">
+		<xsd:annotation>
+			<xsd:documentation>Документы, удостоверяющие личность, временные.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="tns:ReleaseCertificate"/>
+			<xsd:element ref="tns:PassportLossCertificate"/>
+			<xsd:element ref="tns:Form9Certificate"/>
+			<xsd:element ref="tns:TemporaryIdentityCardRF"/>
+		</xsd:choice>
+	</xsd:group>
+	<xsd:element name="PassportRF" type="tns:PassportRFType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт РФ</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ForeignPassport" type="tns:NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт иностранного гражданина</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ResidencePermitRF" type="tns:InternationalPassportRFType">
+		<xsd:annotation>
+			<xsd:documentation>Вид на жительство в РФ. Формат серии и номера совпадает с загранпаспортом.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="InternationalPassportRF" type="tns:InternationalPassportRFType">
+		<xsd:annotation>
+			<xsd:documentation>Загранпаспорт</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="MilitaryPassport" type="tns:MilitaryPassportDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Военный билет</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SailorPassport" type="tns:MilitaryPassportDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт моряка</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="SovietPassport" type="tns:SovietPassportType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт СССР</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="BirthCertificate" type="tns:SovietPassportType">
+		<xsd:annotation>
+			<xsd:documentation>Свидетельство о рождении</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="DrivingLicenseRF" type="tns:DrivingLicenseRFType">
+		<xsd:annotation>
+			<xsd:documentation>Водительское удостоверение РФ</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="ReleaseCertificate" type="tns:NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Справка об освобождении</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="PassportLossCertificate" type="tns:NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Справка об утере паспорта</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="Form9Certificate" type="tns:NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Справка о регистрации по форме 9</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:element name="TemporaryIdentityCardRF" type="tns:NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Временное удостоверение личности гражданина РФ по форме 2П</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="PassportRFType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт РФ</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Series" type="tns:digits-4">
+				<xsd:annotation>
+					<xsd:documentation>Серия</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Number" type="tns:digits-6">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="NotRestrictedDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Документ с нерегламентированными серией и номером</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" name="Series" type="tns:string-20">
+				<xsd:annotation>
+					<xsd:documentation>Серия</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Number">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:pattern value="[0-9а-яА-ЯA-Za-z]{1,25}"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="SovietPassportType">
+		<xsd:annotation>
+			<xsd:documentation>Паспорт CCCP или свидетельство о рождении РФ.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Series" type="tns:SovietStyleDocumentSeriesType">
+				<xsd:annotation>
+					<xsd:documentation>Серия</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Number" type="tns:digits-6">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DrivingLicenseRFType">
+		<xsd:annotation>
+			<xsd:documentation>Водительское удостоверение, выданное в РФ</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Series">
+				<xsd:annotation>
+					<xsd:documentation>
+					Серия.
+					Две цифры и две русские заглавные буквы для водительского удостоверения, полученного до 1 марта 2011 г., 
+					или четыре цифры для водительского удостоверения, полученного после 1 марта 2011 г. Пример: 44АА или 4403
+				</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="4"/>
+						<xsd:pattern value="[0-9]{2}([0-9]{2})|([А-Я]{2})"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Number" type="tns:digits-6">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="MilitaryPassportDocumentType">
+		<xsd:annotation>
+			<xsd:documentation>Военный билет или паспорт моряка</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Series">
+				<xsd:annotation>
+					<xsd:documentation>Серия</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:length value="2"/>
+						<xsd:pattern value="[А-Я]{2}"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:element>
+			<xsd:element name="Number" type="tns:digits-7">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="InternationalPassportRFType">
+		<xsd:annotation>
+			<xsd:documentation>Загранпаспорт, либо вид на жительство в РФ.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Series" type="tns:digits-2">
+				<xsd:annotation>
+					<xsd:documentation>Серия</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Number" type="tns:digits-7">
+				<xsd:annotation>
+					<xsd:documentation>Номер</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IssueDate" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation>Дата выдачи</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Issuer" type="tns:rus-and-num-200">
+				<xsd:annotation>
+					<xsd:documentation>Кем выдан</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="AttachmentRef" type="tns:AttachmentRefType"/>
+	<xsd:complexType name="AttachmentRefType">
+		<xsd:annotation>
+			<xsd:documentation>
+			Ссылка из содержательной части запроса (заявки, ответа) на вложение, находящееся в том же СМЭВ-сообщении.
+		</xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="attachmentId" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+				Идентификатор вложения, на которое ссылаемся. Должен быть равен значению
+				//{urn://x-artefacts-smev-gov-ru/smev-core/client-interaction/basic/1.0}AttachedFile[n]/Id/text()
+				того вложения, на которое нужно сослаться.
+			</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:simpleType name="RFC2046MimeTypesType">
+		<xsd:annotation>
+			<xsd:documentation>Типы вложений, в формате RFC-2046.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="(text|image|audio|video|application)/[a-zA-Z0-9\-+.]*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="SNILSType">
+		<xsd:annotation>
+			<xsd:documentation>СНИЛС</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="11"/>
+			<xsd:pattern value="\d{11}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PhysicalPersonINNType">
+		<xsd:annotation>
+			<xsd:documentation>ИНН физического лица</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="12"/>
+			<xsd:pattern value="\d{12}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OGRNSoleProprietorType">
+		<xsd:annotation>
+			<xsd:documentation>ОГРН индивидуального предпринимателя</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="15"/>
+			<xsd:pattern value="[3]{1}\d{14}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="LegalPersonINNType">
+		<xsd:annotation>
+			<xsd:documentation>ИНН юридического лица</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="10"/>
+			<xsd:pattern value="\d{10}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OGRNCompanyType">
+		<xsd:annotation>
+			<xsd:documentation>ОГРН юридического лица</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="13"/>
+			<xsd:pattern value="[125]{1}\d{12}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="KPPType">
+		<xsd:annotation>
+			<xsd:documentation>КПП</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="9"/>
+			<xsd:pattern value="\d{9}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PostalCodeRFType">
+		<xsd:annotation>
+			<xsd:documentation>
+			Почтовый индекс, РФ.
+			Намеренно указаны одновременно и length и pattern, чтобы облегчить JavaScript коду валидацию "на лету".
+		</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="6"/>
+			<xsd:pattern value="\d{6}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="PhoneNumberRFType">
+		<xsd:annotation>
+			<xsd:documentation>Номер телефона в РФ, в десятизначном формате</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="\d{10}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="EmailAddressType">
+		<xsd:annotation>
+			<xsd:documentation>Адрес электронной почты</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="100"/>
+			<xsd:pattern value="[0-9a-zA-Z_.\-]{2,50}[@]{1}[0-9a-zA-Z_./-]{2,50}[.]{1}[a-zA-Z]{2,5}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="OKATOType">
+		<xsd:annotation>
+			<xsd:documentation>Код ОКАТО</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="11"/>
+			<xsd:pattern value="\d{1,11}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CadastralNumberType">
+		<xsd:annotation>
+			<xsd:documentation>Кадастровый номер земельного участка</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="44"/>
+			<xsd:pattern value="[0-9]{2,3}[/:][0-9/:]{1,40}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="SovietStyleDocumentSeriesType">
+		<xsd:annotation>
+			<xsd:documentation>Серии документов, таких как свидетельства о рождении, советские паспорта, и т. д: римская цифра, тире, две прописные буквы кириллицы.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="6"/>
+			<xsd:pattern value="[IVXLCDM]{1,3}[\-][А-Я]{2}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="digits-7">
+		<xsd:annotation>
+			<xsd:documentation>Строка, состоящая из семи цифр. Например, номер загранпаспорта.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="7"/>
+			<xsd:pattern value="\d{7}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="digits-6">
+		<xsd:annotation>
+			<xsd:documentation>Строка, состоящая из шести цифр. Например, номер паспорта РФ.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="6"/>
+			<xsd:pattern value="\d{6}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="digits-4">
+		<xsd:annotation>
+			<xsd:documentation>Строка, состоящая из четырех цифр. Например, серия паспорта РФ.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="4"/>
+			<xsd:pattern value="\d{4}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="digits-2">
+		<xsd:annotation>
+			<xsd:documentation>Строка, состоящая из двух цифр. Например, серия загранпаспорта.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="2"/>
+			<xsd:pattern value="\d{2}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-and-num-500">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 500 символов.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="500"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.0-9]{1,500}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-and-num-200">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 200 символов.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="200"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.0-9]{1,200}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-and-num-100">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 100 символов.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="100"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.0-9]{1,100}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-and-num-50">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 50 символов.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="50"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.0-9]{1,50}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-500">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 500 символов, цифры не допускаются.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="500"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.]{1,500}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-200">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 200 символов, цифры не допускаются.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="200"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.]{1,200}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-100">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 100 символов, цифры не допускаются.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="100"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.]{1,100}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="rus-50">
+		<xsd:annotation>
+			<xsd:documentation>Русский текст, длиной до 50 символов, цифры не допускаются.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="50"/>
+			<xsd:pattern value="[а-яА-ЯёЁ\-\s,.]{1,50}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-500">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="500"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-200">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="200"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-100">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-50">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="50"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-20">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="string-10">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="10"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

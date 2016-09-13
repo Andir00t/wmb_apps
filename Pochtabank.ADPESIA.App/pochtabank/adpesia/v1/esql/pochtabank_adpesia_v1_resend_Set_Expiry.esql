@@ -1,0 +1,19 @@
+BROKER SCHEMA pochtabank.adpesia.v1.esql
+PATH pochtabank.adpesia.v1.esql.utils, pochtabank.common.utils;
+
+DECLARE MsgExpiry_ms EXTERNAL INTEGER '';
+DECLARE QueueToSend EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE pochtabank_adpesia_v1_resend_Set_Expiry
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+		CALL CopyEntireMessage(OutputRoot, InputRoot);
+		CALL CreateMQRFH2DomainWithReplyToQ(OutputRoot, Environment.sys.ReplytoQ);
+		CALL SaveRFH2InputMsgUsrOut(OutputRoot, Environment);
+		CALL CreateMQMDDomainWithExpiry(OutputRoot, MsgExpiry_ms/10, QueueToSend);
+	
+		RETURN TRUE;
+	END;
+
+END MODULE;

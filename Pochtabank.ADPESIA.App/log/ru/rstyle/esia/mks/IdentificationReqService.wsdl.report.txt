@@ -1,0 +1,31 @@
+
+
+Importing file: C:\Users\as.popov\Desktop\IdentificationReqService.wsdl
+
+
+The following is a list of WS-I warning messages found when importing:
+XSD: The location 'ru/gosuslugi/smev/rev120315/identif.xsd' has not been resolved, Line: 4, Column: 7
+WSDL: The 'AppData' element referenced by the AppData part cannot be resolved., Line: 8, Column: 5
+WSDL: The 'AppData' element referenced by the AppData part cannot be resolved., Line: 11, Column: 5
+WSDL: The 'AppData' element referenced by the AppData part cannot be resolved., Line: 14, Column: 5
+
+
+The WSDL import will proceed with bindings IdentificationReqSOAP_HTTP_Binding.
+Creating wsdl schema document for file:///C:/Users/as.popov/Desktop/IdentificationReqService.wsdl.
+Parsing wsdl binding {http://mks.esia.rstyle.ru/}IdentificationReqSOAP_HTTP_Binding.
+Parsing wsdl binding input Identification.
+Parsing wsdl binding output Identification.
+Parsing wsdl binding fault Identification_Fault.
+Processing doc style for operation Identification.
+Populating WSDL schema IdentificationReqService.xsd.
+Removing unnecessary import statement with namespace http://smev.gosuslugi.ru/rev120315 from schema IdentificationReqService_InlineSchema1.xsd.  This statement was not resolved and is never used.
+Creating file IdentificationReqService.xsd in the workspace.
+Copying source WSDL IdentificationReqService.wsdl to IdentificationReqService.wsdl.
+
+Elapsed time processing this message definition file: 0.369 seconds
+Number of warnings for this message definition file: 0
+
+
+Number of files processed: 1
+
+

@@ -1,0 +1,97 @@
+BROKER SCHEMA pochtabank.adpesia.v1.esql
+PATH pochtabank.adpesia.v1.esql.utils, pochtabank.common.utils;
+
+
+CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		
+	CALL SaveRFH2InputMsgUsr(InputRoot, Environment);
+	
+	DECLARE intMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:InputMessage.(XML.Element)*:*);
+	CASE intMethod
+	
+	WHEN 'IdentificationRequest' THEN	
+				
+		DECLARE identifReqest BLOB;
+		SET identifReqest = CreateESIAReqest('Identification', InputRoot);
+		CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(identifReqest, GetDefaultEncoding(), GetDefaultCCSID());
+		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:IdentificationRequest;
+		DECLARE passportSeries CHARACTER inputBody.*:passportSeries;
+		DECLARE passportNumber CHARACTER inputBody.*:passportNumber;
+		DECLARE firstName CHARACTER inputBody.*:firstName;
+		DECLARE lastName CHARACTER inputBody.*:lastName;
+		DECLARE middleName CHARACTER inputBody.*:middleName;
+		DECLARE mobile CHARACTER inputBody.*:mobile;
+		DECLARE snils CHARACTER inputBody.*:snils;
+		DECLARE inn CHARACTER inputBody.*:inn;
+		DECLARE outputBody REFERENCE TO OutputRoot.XMLNSC.*:Envelope.*:Body.*:Identification.*:MessageData.*:AppData;
+		SET outputBody.*:passportSeries = passportSeries;
+		SET outputBody.*:passportNumber = passportNumber;
+		SET outputBody.*:firstname = firstName;
+		SET outputBody.*:lastname = lastName;
+		SET outputBody.*:middlename = middleName;
+		SET outputBody.*:mobile = mobile;
+		SET outputBody.*:snils = snils;
+		SET outputBody.*:inn = inn;
+		IF NOT isNullOrEmpty(InputRoot.MQMD.ReplyToQ) THEN
+		CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
+		END IF;
+		
+	WHEN 'VerificationRequest' THEN
+		
+		DECLARE verifReqest BLOB;
+		SET verifReqest = CreateESIAReqest('Verification', InputRoot);
+	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(verifReqest, GetDefaultEncoding(), GetDefaultCCSID());
+		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:VerificationRequest;
+		DECLARE passportSeries CHARACTER inputBody.*:passportSeries;
+		DECLARE passportNumber CHARACTER inputBody.*:passportNumber;
+		DECLARE firstName CHARACTER inputBody.*:firstName;
+		DECLARE lastName CHARACTER inputBody.*:lastName;
+		DECLARE middleName CHARACTER inputBody.*:middleName;
+		DECLARE outputBody REFERENCE TO OutputRoot.XMLNSC.*:Envelope.*:Body.*:Verification.*:MessageData.*:AppData;
+		SET outputBody.*:passportSeries = passportSeries;
+		SET outputBody.*:passportNumber = passportNumber;
+		SET outputBody.*:firstname = firstName;
+		SET outputBody.*:lastname = lastName;
+		SET outputBody.*:middlename = middleName;
+		IF NOT isNullOrEmpty(InputRoot.MQMD.ReplyToQ) THEN
+		CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
+		END IF;
+		
+	WHEN 'IdentificationResultReq' THEN
+		
+		DECLARE identifResultReq BLOB;
+		SET identifResultReq = CreateESIAReqest('IdentificationResult', InputRoot);
+	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(identifResultReq, GetDefaultEncoding(), GetDefaultCCSID());
+		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:IdentificationResultReq;
+		DECLARE requestId CHARACTER inputBody.*:requestId;
+		DECLARE smsCode CHARACTER inputBody.*:smsCode;
+		DECLARE outputBody REFERENCE TO OutputRoot.XMLNSC.*:Envelope.*:Body.*:IdentificationResult.*:MessageData.*:AppData;
+		SET outputBody.*:requestId = requestId;
+		SET outputBody.*:smsCode = smsCode;
+		IF NOT isNullOrEmpty(InputRoot.MQMD.ReplyToQ) THEN
+		CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
+		END IF;
+				
+	WHEN 'VerificationResultReq' THEN
+		
+		DECLARE verifResultReq BLOB;
+		SET verifResultReq = CreateESIAReqest('VerificationResult', InputRoot);
+	 	CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(verifResultReq, GetDefaultEncoding(), GetDefaultCCSID());
+		DECLARE inputBody REFERENCE TO InputRoot.XMLNSC.*:InputMessage.*:VerificationResultReq;
+		DECLARE requestId CHARACTER inputBody.*:requestId;
+		DECLARE outputBody REFERENCE TO OutputRoot.XMLNSC.*:Envelope.*:Body.*:VerificationResult.*:MessageData.*:AppData;
+		SET outputBody.*:requestId = requestId;
+		IF NOT isNullOrEmpty(InputRoot.MQMD.ReplyToQ) THEN
+		CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
+		END IF;
+						
+	ELSE END CASE;
+		
+		RETURN TRUE;
+	END;
+	
+		
+		
+END MODULE;

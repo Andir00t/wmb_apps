@@ -1,0 +1,88 @@
+BROKER SCHEMA pochtabank.adpesia.v1.esql
+PATH pochtabank.adpesia.v1.esql.utils, pochtabank.common.utils;
+
+CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpOutput
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		IF NOT EXISTS(Environment.usr.sys[]) THEN
+			CALL StoreReplyQtoEnv(Environment, InputRoot.MQMD.ReplyToQ);
+		ELSE 
+			CALL ReStoreReplyQFromEnv(Environment, OutputRoot);
+		END IF;
+		
+		--CALL SaveRFH2InputMsgUsr(InputRoot, Environment); --для теста
+		--DECLARE operation CHARACTER 'getVerificationResult'; --для теста
+		--SET Environment.usr.sys.esiaRequestId = 'reqestId0'; --для теста
+		
+		DECLARE operation CHARACTER InputRoot.SOAP.Context.operation;
+		DECLARE esiaRequestId CHARACTER Environment.usr.sys.esiaRequestId;
+		
+		DECLARE code CHARACTER 'UNDEFINED';
+		DECLARE respMethod CHARACTER FIELDNAME(InputRoot.SOAP.*:Body.(XML.Element)*:*);
+		--DECLARE respMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:Envelope.*:Body.(XML.Element)*:*); --для теста
+		DECLARE respBody REFERENCE TO InputRoot.SOAP.*:Body;
+		--DECLARE respBody REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body; --для теста
+	
+		CASE respMethod
+		WHEN 'IdentificationResponse' THEN
+		SET code = respBody.*:IdentificationResponce.*:MessageData.*:AppData.*:code;
+		WHEN 'VerificationResponse' THEN
+		SET code = respBody.*:VerificationResponse.*:MessageData.*:AppData.*:code;
+		WHEN 'IdentificationResultResponse' THEN
+		SET code = respBody.*:IdentificationResultResponse.*:MessageData.*:AppData.*:code;
+		WHEN 'VerificationResultResponse' THEN
+		SET code = respBody.*:VerificationResultResponse.*:MessageData.*:AppData.*:code;
+		ELSE END CASE;
+						
+		IF EXISTS(InputRoot.SOAP.*:Body.*:Fault[]) OR EXISTS(InputRoot.SOAP.*:Body.*:IdentificationResponse.*:MessageData.*:AppData.*:fault[])
+			OR EXISTS(InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData.*:fault[])
+			OR EXISTS(InputRoot.SOAP.*:Body.*:IdentificationResultResponse.*:MessageData.*:AppData.*:fault[])
+			OR EXISTS(InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData.*:fault[]) THEN
+			IF (isNullOrEmpty(InputRoot.SOAP.*:Body.(XML.Element)*:*) OR respMethod = 'Fault' OR respMethod = 'fault') THEN
+			SET respMethod = FIELDNAME(Environment.usr.sender.inputMsg.*:*.(XML.Element)*:*);
+			END IF;
+			CALL CreateFaultMessage(respMethod, InputRoot, OutputRoot);
+			CALL CreateMQMDDomainWithReplyToQ(OutputRoot, Environment.usr.sys.ReplytoQ);
+			CALL RestoreRFH2InputMsgUsr(InputRoot, OutputRoot, Environment);
+			PROPAGATE TO TERMINAL 'out2';
+			RETURN FALSE;
+		END IF;
+		
+		IF operation = 'identify' OR operation = 'verify' THEN
+			CALL CreateOutputMessage(operation, InputRoot, OutputRoot, '');
+			CALL CreateMQRFH2DomainWithReplyToQ(OutputRoot, Environment.usr.sys.ReplytoQ);
+			CALL RestoreRFH2InputMsgUsr(InputRoot, OutputRoot, Environment);
+			CALL RestoreRFH2sys(InputRoot, OutputRoot, Environment);
+			PROPAGATE TO TERMINAL 'out';
+			RETURN FALSE;
+		ELSEIF operation = 'getIdentificationResult' OR operation = 'getVerificationResult' THEN
+				 IF code = 'VALID' THEN
+					CALL CreateOutputMessage(operation, InputRoot, OutputRoot, '');
+					CALL CreateMQMDDomainWithReplyToQ(OutputRoot, Environment.usr.sys.ReplytoQ);
+					CALL RestoreRFH2InputMsgUsr(InputRoot, OutputRoot, Environment);
+					PROPAGATE TO TERMINAL 'out1';
+					RETURN FALSE;
+				 ELSEIF code = 'PROCESSING' THEN
+						IF operation = 'getIdentificationResult' THEN
+							CALL CreateOutputMessage('identify', InputRoot, OutputRoot, esiaRequestId);
+							PROPAGATE TO TERMINAL 'out3';
+							RETURN FALSE;
+						ELSEIF operation = 'getVerificationResult' THEN
+							CALL CreateOutputMessage('verify', InputRoot, OutputRoot, esiaRequestId);
+							PROPAGATE TO TERMINAL 'out3';
+							RETURN FALSE;
+						END IF;
+				ELSEIF CONTAINS(code, 'INVALID') THEN
+					CALL CreateFaultResultMessage(operation, code, OutputRoot);
+					CALL CreateMQMDDomainWithReplyToQ(OutputRoot, Environment.usr.sys.ReplytoQ);
+					CALL RestoreRFH2InputMsgUsr(InputRoot, OutputRoot, Environment);
+					PROPAGATE TO TERMINAL 'out2';
+					RETURN FALSE;
+				END IF;						
+		END IF;
+		
+	END;
+	
+END MODULE;
+

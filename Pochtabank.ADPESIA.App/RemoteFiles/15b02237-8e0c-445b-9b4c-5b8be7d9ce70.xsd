@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6hudson-86  svn-revision#12773. --><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://mks.esia.rstyle.ru/" xmlns:ibmSchExtn="http://www.ibm.com/schema/extensions" xmlns:smev="http://smev.gosuslugi.ru/rev120315">
+
+    <xsd:import namespace="http://smev.gosuslugi.ru/rev120315" schemaLocation="a6d7c4d6-6018-44a5-b91e-21c2756c36c3.xsd"/>
+
+    <xsd:element ibmSchExtn:docRoot="true" name="Verification" type="smev:Verification"/>
+    <xsd:element ibmSchExtn:docRoot="true" name="VerificationResponse" type="smev:VerificationResponse"/>
+
+    <xsd:element ibmSchExtn:docRoot="true" name="Identification" type="smev:Identification"/>
+    <xsd:element ibmSchExtn:docRoot="true" name="IdentificationResponse" type="smev:IdentificationResponse"/>
+
+    <xsd:element ibmSchExtn:docRoot="true" name="VerificationResult" type="smev:VerificationResult"/>
+    <xsd:element ibmSchExtn:docRoot="true" name="VerificationResultResponse" type="smev:VerificationResultResponse"/>
+
+    <xsd:element ibmSchExtn:docRoot="true" name="IdentificationResult" type="smev:IdentificationResult"/>
+    <xsd:element ibmSchExtn:docRoot="true" name="IdentificationResultResponse" type="smev:IdentificationResultResponse"/>
+</xsd:schema>

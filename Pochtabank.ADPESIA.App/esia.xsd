@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://mks.esia.rstyle.ru/" xmlns:ns1="http://smev.gosuslugi.ru/rev120315" xmlns:tns="http://mks.esia.rstyle.ru/">
+  <xsd:import namespace="http://smev.gosuslugi.ru/rev120315" schemaLocation="RemoteFiles/a6d7c4d6-6018-44a5-b91e-21c2756c36c3.xsd"/>
+  <xsd:include schemaLocation="RemoteFiles/15b02237-8e0c-445b-9b4c-5b8be7d9ce70.xsd"/>
+
+<!-- BEGIN Global group petaining to all wsdl:message definitions -->
+<!-- END Global group -->
+
+
+<!-- BEGIN Message Definitions for the wsdl:operations  -->
+<!-- END Message Definitions -->
+
+
+</xsd:schema>

@@ -1,0 +1,21 @@
+BROKER SCHEMA pochtabank.adpesia.v1.esql
+PATH pochtabank.adpesia.v1.esql.utils;
+
+CREATE COMPUTE MODULE pochtabank_adpesia_v1_getesia_result_req_Check_MQMD
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		CALL SaveRFH2InputMsgUsr(InputRoot, Environment);
+		CALL SaveRFH2sys(InputRoot, Environment);
+		DECLARE intMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:OutputMessage.(XML.Element)*:*);
+		CASE intMethod
+		WHEN 'IdentificationResponce' THEN
+		CALL CreateInputMessage('identify_res', InputRoot, OutputRoot);
+		WHEN 'VerificationResponce' THEN
+		CALL CreateInputMessage('verify_res', InputRoot, OutputRoot);
+		ELSE END CASE;
+		
+		RETURN TRUE;
+	END;
+
+END MODULE;

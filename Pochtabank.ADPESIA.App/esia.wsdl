@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Published by JAX-WS RI at http://jax-ws.dev.java.net. RI's version is JAX-WS RI 2.2.6hudson-86  svn-revision#12773. --><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="DataVerificationService" targetNamespace="http://mks.esia.rstyle.ru/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://mks.esia.rstyle.ru/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+    <wsdl:appinfo source="WMQI_APPINFO">
+      <MRWSDLAppInfo imported="true">
+        <binding hasEncoding="false" imported="true" name="DataVerificationServiceBinding" originalBindingStyle="document"/>
+      </MRWSDLAppInfo>
+    </wsdl:appinfo>
+  </wsdl:documentation>
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://mks.esia.rstyle.ru/">
+<xsd:include schemaLocation="RemoteFiles/15b02237-8e0c-445b-9b4c-5b8be7d9ce70.xsd"/>
+      <xsd:import namespace="http://smev.gosuslugi.ru/rev120315" schemaLocation="RemoteFiles/a6d7c4d6-6018-44a5-b91e-21c2756c36c3.xsd"/>
+</xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="Verification">
+        <wsdl:part element="tns:Verification" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="VerificationResponse">
+        <wsdl:part element="tns:VerificationResponse" name="parameters"/>
+    </wsdl:message>
+
+    <wsdl:message name="Identification">
+        <wsdl:part element="tns:Identification" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="IdentificationResponse">
+        <wsdl:part element="tns:IdentificationResponse" name="parameters"/>
+    </wsdl:message>
+
+    <wsdl:message name="Verification_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+    <wsdl:message name="VerificationResponse_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+
+    <wsdl:message name="Identification_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+    <wsdl:message name="IdentificationResponse_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+
+    <wsdl:message name="VerificationResult">
+        <wsdl:part element="tns:VerificationResult" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="VerificationResultResponse">
+        <wsdl:part element="tns:VerificationResultResponse" name="parameters"/>
+    </wsdl:message>
+
+    <wsdl:message name="VerificationResult_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+    <wsdl:message name="VerificationResultResponse_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+
+    <wsdl:message name="IdentificationResult">
+        <wsdl:part element="tns:IdentificationResult" name="parameters"/>
+    </wsdl:message>
+    <wsdl:message name="IdentificationResultResponse">
+        <wsdl:part element="tns:IdentificationResultResponse" name="parameters"/>
+    </wsdl:message>
+
+    <wsdl:message name="IdentificationResult_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+    <wsdl:message name="IdentificationResultResponse_Headers">
+        <wsdl:part element="q1:Header" name="Header" xmlns:q1="http://smev.gosuslugi.ru/rev120315"/>
+    </wsdl:message>
+
+    <wsdl:portType name="VerificationServicePortType">
+        <wsdl:operation name="verify">
+            <wsdl:input message="tns:Verification" name="Verification"/>
+            <wsdl:output message="tns:VerificationResponse" name="VerificationResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="identify">
+            <wsdl:input message="tns:Identification" name="Identification"/>
+            <wsdl:output message="tns:IdentificationResponse" name="IdentificationResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getVerificationResult">
+            <wsdl:input message="tns:VerificationResult" name="VerificationResult"/>
+            <wsdl:output message="tns:VerificationResultResponse" name="VerificationResultResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getIdentificationResult">
+            <wsdl:input message="tns:IdentificationResult" name="IdentificationResult"/>
+            <wsdl:output message="tns:IdentificationResultResponse" name="IdentificationResultResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="DataVerificationServiceBinding" type="tns:VerificationServicePortType">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="verify">
+            <wsdl:input name="Verification">
+                <soap:header message="tns:Verification_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="VerificationResponse">
+                <soap:header message="tns:VerificationResponse_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="identify">
+            <wsdl:input name="Identification">
+                <soap:header message="tns:Identification_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="IdentificationResponse">
+                <soap:header message="tns:IdentificationResponse_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getVerificationResult">
+            <wsdl:input name="VerificationResult">
+                <soap:header message="tns:VerificationResult_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="VerificationResultResponse">
+                <soap:header message="tns:VerificationResultResponse_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getIdentificationResult">
+            <wsdl:input name="IdentificationResult">
+                <soap:header message="tns:IdentificationResult_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="IdentificationResultResponse">
+                <soap:header message="tns:IdentificationResultResponse_Headers" part="Header" use="literal"/>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="DataVerificationService">
+        <wsdl:port binding="tns:DataVerificationServiceBinding" name="DataVerificationPort">
+            <soap:address location="http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151/1.00"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

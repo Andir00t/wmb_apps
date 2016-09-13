@@ -1,0 +1,300 @@
+BROKER SCHEMA pochtabank.adpesia.v1.esql.utils
+PATH pochtabank.adpesia.v1.esql.utils, pochtabank.common.utils;
+
+DECLARE pbns NAMESPACE 'http://www.pochtabank.ru/xml/ESIAAdapterResponce';
+DECLARE ns NAMESPACE 'http://www.w3.org/2001/XMLSchema-instance';
+
+CREATE FUNCTION CreateESIAReqest(IN reqMethod CHARACTER, IN InputRoot REFERENCE) RETURNS BLOB
+		BEGIN
+			
+			DECLARE curr_dttm CHARACTER CAST(CURRENT_TIMESTAMP AS CHARACTER FORMAT 'yyyy-MM-dd''T''HH:mm:ss.SSSZZZ');
+			DECLARE appData CHARACTER '';
+		   
+		    CASE reqMethod
+      	  	WHEN 'Identification' THEN
+      	  	SET appData = '<esia:passportSeries/><esia:passportNumber/><esia:firstname/><esia:lastname/><esia:middlename/><esia:mobile/><esia:snils/><esia:inn/>';
+      	  	WHEN 'Verification' THEN
+			SET appData = '<esia:passportSeries/><esia:passportNumber/><esia:firstname/><esia:lastname/><esia:middlename/>';
+      	    WHEN 'IdentificationResult' THEN
+   			SET appData = '<esia:requestId/><esia:smsCode/>';
+      	    WHEN 'VerificationResult' THEN
+			SET appData = '<esia:requestId/>';
+			ELSE END CASE;
+			
+			DECLARE reqTemplate CHARACTER '<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns="http://smev.gosuslugi.ru/rev120315">
+				<env:Header/>
+				<env:Body>
+					<esia:'|| reqMethod ||' xmlns:esia="http://mks.esia.rstyle.ru/">
+						<Message>
+							<Sender>
+								<Code>821701771</Code>
+								<Name>Шлюз СМЭВ Лето Банк</Name>
+							</Sender>
+							<Recipient>
+								<Code>ISIA01001</Code>
+								<Name>Electronic system identification and authentication</Name>
+							</Recipient>
+							<Originator>
+								<Code>821701771</Code>
+								<Name>Шлюз СМЭВ Лето Банк</Name>
+							</Originator>
+							<Service>
+								<Mnemonic>ESIARegister</Mnemonic>
+								<Version>1.00</Version>
+							</Service>
+							<TypeCode>OTHR</TypeCode>
+							<Status>REQUEST</Status>
+							<Date>'|| curr_dttm ||'</Date>
+							<ExchangeType>0</ExchangeType>
+							<CaseNumber>Test</CaseNumber>				
+						</Message>
+						<MessageData>
+							<AppData>'||
+								appData
+							||'</AppData>
+						</MessageData>
+					</esia:'|| reqMethod ||'>
+				</env:Body>
+			</env:Envelope>';
+			
+		DECLARE reqTemplateBlob BLOB CAST(reqTemplate AS BLOB CCSID GetDefaultCCSID());
+		RETURN reqTemplateBlob;
+			
+END;
+	
+CREATE PROCEDURE SaveRFH2InputMsgUsrOut(IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+	IF EXISTS(OutputRoot.MQRFH2[]) THEN 
+	SET OutputRoot.MQRFH2.usr = Environment.usr.adpInputMsgUsr;
+	END IF; 
+END;
+		
+CREATE PROCEDURE SaveRFH2InputMsgUsr(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+	IF EXISTS(InputRoot.MQRFH2[]) THEN 
+	SET Environment.usr.adpInputMsgUsr = InputRoot.MQRFH2.usr;
+	END IF; 
+END;
+
+CREATE PROCEDURE RestoreRFH2InputMsgUsr(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+		IF NOT EXISTS(InputRoot.MQRFH2[]) THEN 
+			CALL CreateMQRFH2Domain(OutputRoot);
+			CREATE FIELD OutputRoot.MQRFH2.usr;
+			CALL CopyBranch(Environment.usr.adpInputMsgUsr, OutputRoot.MQRFH2.usr);
+		ELSE 
+			CREATE FIELD OutputRoot.MQRFH2.usr;
+			CALL CopyBranch(Environment.usr.adpInputMsgUsr, OutputRoot.MQRFH2.usr);
+		END IF; 	
+END;
+
+CREATE PROCEDURE SaveRFH2sys(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+	IF EXISTS(InputRoot.MQRFH2[]) THEN 
+	SET Environment.usr.sys = InputRoot.MQRFH2.sys;
+	END IF; 
+END;
+
+CREATE PROCEDURE RestoreRFH2sys(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+		IF NOT EXISTS(InputRoot.MQRFH2[]) THEN 
+			CALL CreateMQRFH2Domain(OutputRoot);
+			CREATE FIELD OutputRoot.MQRFH2.usr.sys;
+			CALL CopyBranch(Environment.usr.sys, OutputRoot.MQRFH2.usr.sys);
+		ELSE 
+			CREATE FIELD OutputRoot.MQRFH2.sys;
+			CALL CopyBranch(Environment.usr.sys, OutputRoot.MQRFH2.usr.sys);
+		END IF; 	
+END;
+
+CREATE PROCEDURE StoreReplyQtoEnv(IN Environment REFERENCE, IN replyToQ CHARACTER) BEGIN
+		SET Environment.usr.sys.ReplytoQ = replyToQ;
+END;
+
+CREATE PROCEDURE ReStoreReplyQFromEnv(IN Environment REFERENCE, IN OutputRoot REFERENCE) BEGIN
+		IF EXISTS(Environment.usr.sys[]) THEN
+		CALL CreateMQMDDomain(OutputRoot);
+		SET OutputRoot.MQMD.ReplyToQ = Environment.usr.sys.ReplytoQ;
+		END IF;	
+END;
+
+CREATE PROCEDURE CreateOutputMessage(IN Operation CHARACTER, IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN EsiaReqID CHARACTER) BEGIN
+		
+		CALL CreateOutputXMLNSC(OutputRoot);
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
+		CASE Operation
+		 WHEN 'identify' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResponce';
+		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:IdentificationResponse.*:MessageData.*:AppData;
+		--DECLARE res_appdata_ref REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body.*:IdentificationResponse.*:MessageData.*:AppData;
+		IF isNullOrEmpty(EsiaReqID) THEN
+			SET ref.pbns:code = ''; --res_appdata_ref.*:code;
+			SET ref.pbns:description = ''; --res_appdata_ref.*:description;
+			SET ref.pbns:requestId = res_appdata_ref.*:requestId;
+		ELSE 
+			SET ref.pbns:requestId = EsiaReqID;
+		END IF;	
+		 WHEN 'verify' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResponce';
+		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData;
+		IF isNullOrEmpty(EsiaReqID) THEN
+			SET ref.pbns:code = ''; --res_appdata_ref.*:code;
+			SET ref.pbns:description = ''; --res_appdata_ref.*:description;
+			SET ref.pbns:requestId = res_appdata_ref.*:requestId;
+		ELSE 
+			SET ref.pbns:requestId = EsiaReqID;
+		END IF;	
+		 WHEN 'getIdentificationResult' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResultRes';
+		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:IdentificationResultResponse.*:MessageData.*:AppData;
+		SET ref.pbns:code = res_appdata_ref.*:code;
+		 WHEN 'getVerificationResult' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultRes';
+		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData;
+		--DECLARE res_appdata_ref REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData;
+		SET ref.pbns:code = res_appdata_ref.*:code;
+		ELSE END CASE;
+		
+END;
+
+CREATE PROCEDURE CreateInputMessage(IN Operation CHARACTER, IN InputRoot REFERENCE, IN OutputRoot REFERENCE) BEGIN
+		
+		CALL CreateInputXMLNSC(OutputRoot);
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:InputMessage;
+		CASE Operation
+		
+		WHEN 'identify_res' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResultReq';
+		DECLARE input_ref REFERENCE TO InputRoot.XMLNSC.*:OutputMessage.*:IdentificationResponce;
+		SET ref.pbns:requestId = input_ref.*:requestId;
+		SET ref.pbns:smsCode = ''; --input_ref.*:smsCode;
+		
+		WHEN 'verify_res' THEN
+		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultReq';
+		DECLARE input_ref REFERENCE TO InputRoot.XMLNSC.*:OutputMessage.*:VerificationResponce;
+		SET ref.pbns:requestId = input_ref.*:requestId;
+				
+		ELSE END CASE;
+		
+END;
+	
+CREATE PROCEDURE CreateFaultMessage(IN Method CHARACTER, IN InputRoot REFERENCE, IN OutputRoot REFERENCE) BEGIN
+	
+		--DECLARE messageid CHARACTER;
+		--DECLARE sourceMessage CHARACTER;
+		DECLARE faultCode CHARACTER;
+		DECLARE faultString CHARACTER;
+		DECLARE datail REFERENCE TO InputRoot.SOAP.*:Body.*:Fault.*:detail;
+		--DECLARE nested REFERENCE TO InputRoot.SOAP.*:Body.*:Fault.*:detail;
+	
+		CALL CreateOutputXMLNSC(OutputRoot);
+		IF EXISTS(InputRoot.SOAP.*:Body.*:Fault[]) THEN		
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:Fault;
+			--SET messageid = fault.*:detail.*:messageId;
+			--SET sourceMessage = fault.*:detail.*:SourceMessage;
+			SET faultCode = fault.*:faultcode;
+			SET faultString = fault.*:faultstring;
+		ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:IdentificationResponse.*:MessageData.*:AppData.*:fault[]) THEN
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:IdentificationResponse.*:MessageData.*:AppData.*:fault;
+			SET faultCode = fault.*:faultCode;
+			SET faultString = fault.*:faultString;	
+		ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData.*:fault[]) THEN
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData.*:fault;
+			SET faultCode = fault.*:faultCode;
+			SET faultString = fault.*:faultString;
+		ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:IdentificationResultResponse.*:MessageData.*:AppData.*:fault[]) THEN
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:IdentificationResultResponse.*:MessageData.*:AppData.*:fault;
+			SET faultCode = fault.*:faultCode;
+			SET faultString = fault.*:faultString;
+		ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData.*:fault[]) THEN 
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData.*:fault;
+			SET faultCode = fault.*:faultCode;
+			SET faultString = fault.*:faultString;
+		END IF;
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
+		DECLARE refd REFERENCE TO ref;
+		CASE Method
+		WHEN 'IdentificationResponse' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResponce';
+			DECLARE refd REFERENCE TO ref.pbns:IdentificationResponce;
+		WHEN 'VerificationResponse' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResponce';
+			DECLARE refd REFERENCE TO ref.pbns:VerificationResponce;
+		WHEN 'IdentificationResultResponse' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResultRes';
+			DECLARE refd REFERENCE TO ref.pbns:IdentificationResultRes;
+		WHEN 'VerificationResultResponse' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultRes';
+			DECLARE refd REFERENCE TO ref.pbns:VerificationResultRes;
+    	WHEN 'IdentificationRequest' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResponce';
+			DECLARE refd REFERENCE TO ref.pbns:IdentificationResponce;
+		WHEN 'VerificationRequest' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResponce';
+			DECLARE refd REFERENCE TO ref.pbns:IdentificationResponce;
+		WHEN 'IdentificationResultRequest' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResultRes';
+			DECLARE refd REFERENCE TO ref.pbns:IdentificationResultRes;
+		WHEN 'VerificationResultRequest' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultRes';
+			DECLARE refd REFERENCE TO ref.pbns:VerificationResultRes;
+		ELSE END CASE;
+		
+		SET ref.pbns:faultcode = faultCode;
+		SET ref.pbns:faultstring = faultString;
+		CREATE LASTCHILD OF ref AS refd NAMESPACE pbns NAME 'detail';
+		SET refd = datail;
+		--SET ref.pbns:faultcode = faultCode;
+		--SET ref.pbns:faultstring = faultString;
+		--SET refd.pbns:messageId = messageid;
+		--SET refd.pbns:SourceMessage = sourceMessage;
+					
+END;
+
+CREATE PROCEDURE CreateFaultResultMessage(IN Operation CHARACTER, IN Code CHARACTER, IN OutputRoot REFERENCE) BEGIN
+	
+		CALL CreateOutputXMLNSC(OutputRoot);
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
+		DECLARE Description CHARACTER '';
+		
+		CASE Code
+			WHEN 'INVALID' THEN
+			SET Description = 'Данные некорректны';
+		WHEN 'INVALID_CFM_CODE' THEN
+			SET Description = 'Неверный код подтверждения';
+		WHEN 'INVALID_REQUEST_ID' THEN
+			SET Description = 'Неверный код запроса';
+		ELSE END CASE;
+			
+		CASE Operation
+		WHEN 'getIdentificationResult' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResultRes';
+		WHEN 'getVerificationResult' THEN
+			CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultRes';
+		ELSE END CASE;
+		SET ref.pbns:code = Code;
+		SET ref.pbns:description = Description;
+		
+				
+END;
+	
+CREATE FUNCTION CreateOutputXMLNSC(IN OutputRoot REFERENCE) BEGIN
+	
+		CALL CreateXMLNSCDomain(OutputRoot);
+		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
+      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
+		CREATE FIELD OutputRoot.XMLNSC.pbns:OutputMessage;
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns = pbns;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns:xsi = ns;
+		
+END;
+
+CREATE FUNCTION CreateInputXMLNSC(IN OutputRoot REFERENCE) BEGIN
+	
+		CALL CreateXMLNSCDomain(OutputRoot);
+		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+	    SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
+	    SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
+		CREATE FIELD OutputRoot.XMLNSC.pbns:InputMessage;
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:InputMessage;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns = pbns;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns:xsi = ns;
+		
+END;

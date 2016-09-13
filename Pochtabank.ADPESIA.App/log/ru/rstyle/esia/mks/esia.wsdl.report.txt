@@ -1,0 +1,43 @@
+
+
+Importing file: C:\Users\as.popov\Desktop\ESB\Apps\ADPESIA\esia.wsdl
+
+
+The following is a list of WS-I warning messages found when importing:
+XSD: There is no xmlns declaration for namespace 'http://smev.gosuslugi.ru/rev120315', Line: 6, Column: 13
+XSD: The location 'http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151/1.00/wsdl/ISIA01/7294a19d-47d7-496f-a7d7-7bfac42d683f' has not been resolved because the import is unused, Line: 7, Column: 13
+XSD: There is no xmlns declaration for namespace 'http://www.w3.org/2004/08/xop/include', Line: 7, Column: 13
+
+
+The WSDL import will proceed with bindings DataVerificationServiceBinding.
+Creating wsdl schema document for file:///C:/Users/as.popov/Desktop/ESB/Apps/ADPESIA/esia.wsdl.
+Parsing wsdl binding {http://mks.esia.rstyle.ru/}DataVerificationServiceBinding.
+Parsing wsdl binding input verify.
+Parsing wsdl binding output verify.
+Parsing wsdl binding input identify.
+Parsing wsdl binding output identify.
+Parsing wsdl binding input getVerificationResult.
+Parsing wsdl binding output getVerificationResult.
+Parsing wsdl binding input getIdentificationResult.
+Parsing wsdl binding output getIdentificationResult.
+Processing doc style for operation verify.
+Processing doc style for operation identify.
+Processing doc style for operation getVerificationResult.
+Processing doc style for operation getIdentificationResult.
+Populating WSDL schema esia.xsd.
+Removing unnecessary import statement with namespace http://www.w3.org/2004/08/xop/include from schema esia_InlineSchema1.xsd.  This statement was not resolved and is never used.
+Creating file esia.xsd in the workspace.
+Creating file /Pochtabank.ADPESIA.App/15b02237-8e0c-445b-9b4c-5b8be7d9ce70.xsd in the workspace.
+Creating file /Pochtabank.ADPESIA.App/a6d7c4d6-6018-44a5-b91e-21c2756c36c3.xsd in the workspace.
+Creating file /Pochtabank.ADPESIA.App/7294a19d-47d7-496f-a7d7-7bfac42d683f.xsd in the workspace.
+Creating file /Pochtabank.ADPESIA.App/0de05d3c-210d-48f2-a3d9-d37d2f544dd9.xsd in the workspace.
+Creating file /Pochtabank.ADPESIA.App/fdc2de08-e702-49d7-be0c-7091735da13c.xsd in the workspace.
+Copying source WSDL esia.wsdl to esia.wsdl.
+
+Elapsed time processing this message definition file: 0.824 seconds
+Number of warnings for this message definition file: 0
+
+
+Number of files processed: 1
+
+
