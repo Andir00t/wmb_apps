@@ -6,7 +6,9 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_transform_sign_AdpInput
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	BEGIN
 		
-	CALL SaveRFH2InputMsgUsr(InputRoot, Environment);
+	IF EXISTS(InputRoot.MQRFH2[]) THEN
+	CALL SaveRFH2UsrInputMsg(InputRoot, Environment);
+	END IF;
 	
 	DECLARE intMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:InputMessage.(XML.Element)*:*);
 	CASE intMethod

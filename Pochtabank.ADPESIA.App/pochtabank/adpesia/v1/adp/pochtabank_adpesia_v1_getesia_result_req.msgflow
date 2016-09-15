@@ -87,28 +87,28 @@
       <nodes xmi:type="ComIbmMQInput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="37,316" queueName="ADPESIA_GET_RESULT" messageDomainProperty="XMLNSC" validateTiming="immediate">
         <translation xmi:type="utility:ConstantString" string="Get Result Input"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="805,316" queueName="ADPESIA_ERROR" transactionMode="no" persistenceMode="asQdef">
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_4" location="657,316" queueName="ADPESIA_ERROR" transactionMode="no" persistenceMode="asQdef">
         <translation xmi:type="utility:ConstantString" string="ESIA Fault"/>
       </nodes>
       <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="283,316" computeExpression="esql://routine/pochtabank.adpesia.v1.esql#pochtabank_adpesia_v1_getesia_result_req_Check_MQMD.Main" computeMode="destinationAndMessage">
         <translation xmi:type="utility:ConstantString" string="ConvertToResulReqest"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="788,258" queueName="ADPESIA_RESP">
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="640,258" queueName="ADPESIA_RESP">
         <translation xmi:type="utility:ConstantString" string="ADP MQ Output"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="977,262">
+      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_7" location="829,262">
         <translation xmi:type="utility:ConstantString" string="MQ Reply"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="977,320">
+      <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="829,320">
         <translation xmi:type="utility:ConstantString" string="MQ Reply1"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_14" location="799,85" queueName="ADPESIA_ERROR">
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_14" location="651,85" queueName="ADPESIA_ERROR">
         <translation xmi:type="utility:ConstantString" string="ADP Error"/>
       </nodes>
-      <nodes xmi:type="pochtabank_adpesia_v1_utils_pochtabank_adpesia_v1_transform_sign.subflow:FCMComposite_1" xmi:id="FCMComposite_1_19" location="681,317" Proxy.internal_npcompiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler">
+      <nodes xmi:type="pochtabank_adpesia_v1_utils_pochtabank_adpesia_v1_transform_sign.subflow:FCMComposite_1" xmi:id="FCMComposite_1_19" location="533,317" Proxy.internal_npcompiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler">
         <translation xmi:type="utility:ConstantString" string="Transform Sign Req"/>
       </nodes>
-      <nodes xmi:type="pochtabank_adpesia_v1_utils_pochtabank_adpesia_v1_resend.subflow:FCMComposite_1" xmi:id="FCMComposite_1_20" location="974,386">
+      <nodes xmi:type="pochtabank_adpesia_v1_utils_pochtabank_adpesia_v1_resend.subflow:FCMComposite_1" xmi:id="FCMComposite_1_20" location="826,386">
         <translation xmi:type="utility:ConstantString" string="To Resend"/>
       </nodes>
       <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="132,316" isErrorLog="false" attachBody="true" logMessage="Получен запрос для проверки результата" moduleName="ADPESIA">
@@ -117,28 +117,25 @@
       <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="314,247" logLevel="1" logMessage="Ошибка при получении нового запроса для проверки результата" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:Error"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_21" location="406,317" isErrorLog="false" attachBody="true" logMessage="Трансформация в формат ЕСИА Result" moduleName="ADPESIA">
-        <translation xmi:type="utility:ConstantString" string="Log:Transform to ResultReq"/>
-      </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_22" location="773,386" isErrorLog="false" attachBody="true" logMessage="Код ответа ЕСИА - 'PROCESSING'. Повторная отправка..." moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_22" location="625,386" isErrorLog="false" attachBody="true" logMessage="Код ответа ЕСИА - 'PROCESSING'. Повторная отправка..." moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:PROCESSING Resp"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_23" location="875,262" isErrorLog="false" attachBody="true" logMessage="Запрашивающей системе направлен ответ" moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_23" location="727,262" isErrorLog="false" attachBody="true" logMessage="Запрашивающей системе направлен ответ" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:SuccessResp"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_24" location="885,320" isErrorLog="false" attachBody="true" logLevel="10" logMessage="Запрашивающей системе направлен ответ Error/Fault" moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_24" location="737,320" isErrorLog="false" attachBody="true" logLevel="10" logMessage="Запрашивающей системе направлен ответ Error/Fault" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:FaultResp"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_25" location="779,143" attachBody="true" logLevel="1" logMessage="Ошибка трансформации в формат ЕСИА Result" moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_25" location="631,143" attachBody="true" logLevel="1" logMessage="Ошибка трансформации в формат ЕСИА Result" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:Transform Error"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_26" location="784,202" attachBody="true" logLevel="1" logMessage="Ошибка в подпотоке обращения к ЕСИА" moduleName="ADPESIA">
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_26" location="636,202" attachBody="true" logLevel="1" logMessage="Ошибка в подпотоке обращения к ЕСИА" moduleName="ADPESIA">
         <translation xmi:type="utility:ConstantString" string="Log:SubFlowError"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_logging_SendLogToQueue.subflow:FCMComposite_1" xmi:id="FCMComposite_1_27" location="1167,236">
+      <nodes xmi:type="pochtabank_common_utils_logging_SendLogToQueue.subflow:FCMComposite_1" xmi:id="FCMComposite_1_27" location="1019,236">
         <translation xmi:type="utility:ConstantString" string="ToLogger"/>
       </nodes>
-      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_9" location="559,317">
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryProcessBeforeWS.subflow:FCMComposite_1" xmi:id="FCMComposite_1_9" location="411,317">
         <translation xmi:type="utility:ConstantString" string="RetryProcessBeforeWS"/>
       </nodes>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_19" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.in"/>
@@ -147,7 +144,6 @@
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_3" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.Ввод"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_14" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
-      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_12" targetNode="FCMComposite_1_21" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_14" targetNode="FCMComposite_1_22" sourceNode="FCMComposite_1_19" sourceTerminalName="OutTerminal.Output3" targetTerminalName="InTerminal.Ввод"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_15" targetNode="FCMComposite_1_20" sourceNode="FCMComposite_1_22" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Input"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_16" targetNode="FCMComposite_1_23" sourceNode="FCMComposite_1_6" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
@@ -161,8 +157,8 @@
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_28" targetNode="FCMComposite_1_27" sourceNode="FCMComposite_1_14" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_29" targetNode="FCMComposite_1_27" sourceNode="FCMComposite_1_7" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_30" targetNode="FCMComposite_1_27" sourceNode="FCMComposite_1_8" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
-      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_21" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Input"/>
       <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_19" sourceNode="FCMComposite_1_9" sourceTerminalName="OutTerminal.Output" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_9" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
     </composition>
     <propertyOrganizer>
       <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.FatalQName">
@@ -274,7 +270,7 @@
     <attributeLinks promotedAttribute="Property.ADPRetryQName" overriddenNodes="FCMComposite_1_20">
       <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend.subflow#Property.ADPRetryQName"/>
     </attributeLinks>
-    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_3 FCMComposite_1_24 FCMComposite_1_2 FCMComposite_1_22 FCMComposite_1_26 FCMComposite_1_23 FCMComposite_1_25 FCMComposite_1_21">
+    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_3 FCMComposite_1_24 FCMComposite_1_2 FCMComposite_1_22 FCMComposite_1_26 FCMComposite_1_23 FCMComposite_1_25">
       <overriddenAttribute href="pochtabank/common/utils/logging/AddLog.subflow#Property.moduleName"/>
     </attributeLinks>
     <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_9">

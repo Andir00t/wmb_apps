@@ -61,58 +61,90 @@ CREATE FUNCTION CreateESIARequest(IN reqMethod CHARACTER, IN InputRoot REFERENCE
 			
 		DECLARE reqTemplateBlob BLOB CAST(reqTemplate AS BLOB CCSID GetDefaultCCSID());
 		RETURN reqTemplateBlob;
-			
 END;
+
 	
-CREATE PROCEDURE SaveRFH2InputMsgUsrOut(IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+CREATE PROCEDURE SaveRFH2UsrInputMsgOut(IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
 	IF EXISTS(OutputRoot.MQRFH2[]) THEN 
-	SET OutputRoot.MQRFH2.usr = Environment.usr.adpInputMsgUsr;
+	SET OutputRoot.MQRFH2.usr = Environment.adpInputMsgData.MQRFH2.usr;
 	END IF; 
 END;
 		
-CREATE PROCEDURE SaveRFH2InputMsgUsr(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
-	IF EXISTS(InputRoot.MQRFH2[]) THEN 
-	SET Environment.usr.adpInputMsgUsr = InputRoot.MQRFH2.usr;
-	END IF; 
+CREATE PROCEDURE SaveRFH2UsrInputMsg(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+		IF EXISTS(InputRoot.MQRFH2.adpInputMsgData.MQRFH2[]) THEN
+			SET Environment.adpInputMsgData.MQRFH2[] = InputRoot.MQRFH2.adpInputMsgData.MQRFH2[];
+		ELSE	
+			SET Environment.adpInputMsgData.MQRFH2.usr[] = InputRoot.MQRFH2.usr[];
+		END IF;
 END;
 
-CREATE PROCEDURE RestoreRFH2InputMsgUsr(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+CREATE PROCEDURE RestoreRFH2UsrInputMsg(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
 		IF NOT EXISTS(InputRoot.MQRFH2[]) THEN 
 			CALL CreateMQRFH2Domain(OutputRoot);
 			CREATE FIELD OutputRoot.MQRFH2.usr;
-			CALL CopyBranch(Environment.usr.adpInputMsgUsr, OutputRoot.MQRFH2.usr);
+			CALL CopyBranch(Environment.adpInputMsgData.MQRFH2.usr, OutputRoot.MQRFH2.usr);
 		ELSE 
 			CREATE FIELD OutputRoot.MQRFH2.usr;
-			CALL CopyBranch(Environment.usr.adpInputMsgUsr, OutputRoot.MQRFH2.usr);
+			CALL CopyBranch(Environment.adpInputMsgData.MQRFH2.usr, OutputRoot.MQRFH2.usr);
 		END IF; 	
 END;
 
-CREATE PROCEDURE SaveRFH2sys(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+CREATE PROCEDURE RestoreRFH2UsrInputMsgToNextFlow(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+		IF NOT EXISTS(InputRoot.MQRFH2[]) THEN 
+			CALL CreateMQRFH2Domain(OutputRoot);
+			CREATE FIELD OutputRoot.MQRFH2.adpInputMsgData.MQRFH2.usr;
+			CALL CopyBranch(Environment.adpInputMsgData.MQRFH2.usr, OutputRoot.MQRFH2.adpInputMsgData.MQRFH2.usr);
+		ELSE 
+			CREATE FIELD OutputRoot.MQRFH2.adpInputMsgData.MQRFH2.usr;
+			CALL CopyBranch(Environment.adpInputMsgData.MQRFH2.usr, OutputRoot.MQRFH2.adpInputMsgData.MQRFH2.usr);
+		END IF; 	
+END;
+
+CREATE PROCEDURE SaveRFH2RepToQ(IN InputRoot REFERENCE, IN Environment REFERENCE) BEGIN
 	IF EXISTS(InputRoot.MQRFH2[]) THEN 
-	SET Environment.usr.sys = InputRoot.MQRFH2.sys;
+		SET Environment.adpInputMsgData.MQMD[] = InputRoot.MQRFH2.adpInputMsgData.MQMD[];
 	END IF; 
 END;
 
-CREATE PROCEDURE RestoreRFH2sys(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
+CREATE PROCEDURE RestoreRFH2RepToQ(IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN Environment REFERENCE) BEGIN
 		IF NOT EXISTS(InputRoot.MQRFH2[]) THEN 
 			CALL CreateMQRFH2Domain(OutputRoot);
-			CREATE FIELD OutputRoot.MQRFH2.usr.sys;
-			CALL CopyBranch(Environment.usr.sys, OutputRoot.MQRFH2.usr.sys);
+			CREATE FIELD OutputRoot.MQRFH2.adpInputMsgData.MQMD;
+			CALL CopyBranch(Environment.adpInputMsgData.MQMD, OutputRoot.MQRFH2.adpInputMsgData.MQMD);
 		ELSE 
-			CREATE FIELD OutputRoot.MQRFH2.sys;
-			CALL CopyBranch(Environment.usr.sys, OutputRoot.MQRFH2.usr.sys);
+			CREATE FIELD OutputRoot.MQRFH2.adpInputMsgData.MQMD;
+			CALL CopyBranch(Environment.adpInputMsgData.MQMD, OutputRoot.MQRFH2.adpInputMsgData.MQMD);
 		END IF; 	
 END;
 
 CREATE PROCEDURE StoreReplyQtoEnv(IN Environment REFERENCE, IN replyToQ CHARACTER) BEGIN
-		SET Environment.usr.sys.ReplytoQ = replyToQ;
+		SET Environment.adpInputMsgData.MQMD.ReplytoQ = replyToQ;
 END;
 
 CREATE PROCEDURE ReStoreReplyQFromEnv(IN Environment REFERENCE, IN OutputRoot REFERENCE) BEGIN
-		IF EXISTS(Environment.usr.sys[]) THEN
+		IF EXISTS(Environment.adpInputMsgData.MQMD[]) THEN
 		CALL CreateMQMDDomain(OutputRoot);
-		SET OutputRoot.MQMD.ReplyToQ = Environment.usr.sys.ReplytoQ;
+		SET OutputRoot.MQMD.ReplyToQ = Environment.adpInputMsgData.MQMD.ReplytoQ;
 		END IF;	
+END;
+
+CREATE PROCEDURE CreateMQRFH2DomainWithReplyToQ(IN outRoot REFERENCE, IN replyToQ REFERENCE)
+BEGIN
+	CALL CreateMQRFH2Domain(outRoot);
+	SET outRoot.MQRFH2.adpInputMsgData.MQMD.ReplytoQ = replyToQ;
+END;
+	
+CREATE FUNCTION CreateOutputXMLNSC(IN OutputRoot REFERENCE) BEGIN
+	
+		CALL CreateXMLNSCDomain(OutputRoot);
+		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
+      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
+		CREATE FIELD OutputRoot.XMLNSC.pbns:OutputMessage;
+		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns = pbns;
+		--SET ref.(XMLNSC.NamespaceDecl)xmlns:xsi = ns;
+		
 END;
 
 CREATE PROCEDURE CreateOutputMessage(IN Operation CHARACTER, IN InputRoot REFERENCE, IN OutputRoot REFERENCE, IN EsiaReqID CHARACTER) BEGIN
@@ -123,10 +155,9 @@ CREATE PROCEDURE CreateOutputMessage(IN Operation CHARACTER, IN InputRoot REFERE
 		 WHEN 'identify' THEN
 		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'IdentificationResponce';
 		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:IdentificationResponse.*:MessageData.*:AppData;
-		--DECLARE res_appdata_ref REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body.*:IdentificationResponse.*:MessageData.*:AppData;
 		IF isNullOrEmpty(EsiaReqID) THEN
-			SET ref.pbns:code = ''; --res_appdata_ref.*:code;
-			SET ref.pbns:description = ''; --res_appdata_ref.*:description;
+			SET ref.pbns:code = '';
+			SET ref.pbns:description = '';
 			SET ref.pbns:requestId = res_appdata_ref.*:requestId;
 		ELSE 
 			SET ref.pbns:requestId = EsiaReqID;
@@ -135,8 +166,8 @@ CREATE PROCEDURE CreateOutputMessage(IN Operation CHARACTER, IN InputRoot REFERE
 		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResponce';
 		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResponse.*:MessageData.*:AppData;
 		IF isNullOrEmpty(EsiaReqID) THEN
-			SET ref.pbns:code = ''; --res_appdata_ref.*:code;
-			SET ref.pbns:description = ''; --res_appdata_ref.*:description;
+			SET ref.pbns:code = '';
+			SET ref.pbns:description = '';
 			SET ref.pbns:requestId = res_appdata_ref.*:requestId;
 		ELSE 
 			SET ref.pbns:requestId = EsiaReqID;
@@ -148,7 +179,6 @@ CREATE PROCEDURE CreateOutputMessage(IN Operation CHARACTER, IN InputRoot REFERE
 		 WHEN 'getVerificationResult' THEN
 		CREATE LASTCHILD OF ref AS ref NAMESPACE pbns NAME 'VerificationResultRes';
 		DECLARE res_appdata_ref REFERENCE TO InputRoot.SOAP.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData;
-		--DECLARE res_appdata_ref REFERENCE TO InputRoot.XMLNSC.*:Envelope.*:Body.*:VerificationResultResponse.*:MessageData.*:AppData;
 		SET ref.pbns:code = res_appdata_ref.*:code;
 		ELSE END CASE;
 		
@@ -273,25 +303,6 @@ CREATE PROCEDURE CreateFaultResultMessage(IN Operation CHARACTER, IN Code CHARAC
 		SET ref.pbns:description = Description;
 		
 				
-END;
-
-CREATE PROCEDURE CreateMQRFH2DomainWithReplyToQ(IN outRoot REFERENCE, IN replyToQ REFERENCE)
-BEGIN
-	CALL CreateMQRFH2Domain(outRoot);
-	SET outRoot.MQRFH2.sys.ReplytoQ = replyToQ;
-END;
-	
-CREATE FUNCTION CreateOutputXMLNSC(IN OutputRoot REFERENCE) BEGIN
-	
-		CALL CreateXMLNSCDomain(OutputRoot);
-		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
-      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
-      	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
-		CREATE FIELD OutputRoot.XMLNSC.pbns:OutputMessage;
-		DECLARE ref REFERENCE TO OutputRoot.XMLNSC.pbns:OutputMessage;
-		--SET ref.(XMLNSC.NamespaceDecl)xmlns = pbns;
-		--SET ref.(XMLNSC.NamespaceDecl)xmlns:xsi = ns;
-		
 END;
 
 CREATE FUNCTION CreateInputXMLNSC(IN OutputRoot REFERENCE) BEGIN

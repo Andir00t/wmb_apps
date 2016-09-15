@@ -5,9 +5,9 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_getesia_result_req_Check_MQMD
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	BEGIN
 		
-		CALL RestoreLogToFlow(InputRoot, Environment);	
-		CALL SaveRFH2InputMsgUsr(InputRoot, Environment);
-		CALL SaveRFH2sys(InputRoot, Environment);
+		CALL SaveRFH2UsrInputMsg(InputRoot, Environment);
+		CALL SaveRFH2RepToQ(InputRoot, Environment);
+		CALL RestoreLogToFlow(InputRoot, Environment);
 		DECLARE intMethod CHARACTER FIELDNAME(InputRoot.XMLNSC.*:OutputMessage.(XML.Element)*:*);
 		CASE intMethod
 		WHEN 'IdentificationResponce' THEN

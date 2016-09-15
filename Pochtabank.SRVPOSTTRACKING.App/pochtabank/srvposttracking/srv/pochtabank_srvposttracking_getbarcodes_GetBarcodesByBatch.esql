@@ -70,3 +70,4 @@ CREATE COMPUTE MODULE pochtabank_srvposttracking_getbarcodes_GetBarcodesByBatch
 	END;
 	
 END MODULE;
+
