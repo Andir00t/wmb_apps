@@ -1,0 +1,267 @@
+BROKER SCHEMA pochtabank.common.utils
+PATH pochtabank.common.utils;
+
+CREATE PROCEDURE CopyBranch(IN InputRef REFERENCE, IN OutputRef REFERENCE)
+BEGIN
+	DECLARE i INTEGER 1;
+	FOR child AS InputRef.*[] DO
+		IF CARDINALITY(child.*[]) = 0 THEN
+			CREATE FIELD OutputRef.*[i] NAME FIELDNAME(child);
+			SET OutputRef.*[i] = FIELDVALUE(InputRef.*[i]);
+		ELSE
+			CREATE FIELD OutputRef.*[i] NAME FIELDNAME(child);
+			CALL CopyBranch(child, OutputRef.*[i]);
+		END IF;
+		SET i = i + 1; 
+	END FOR;
+	
+END;
+
+CREATE PROCEDURE AddErrorListToLastLog(IN env REFERENCE, IN inExcList REFERENCE) BEGIN
+		DECLARE num INTEGER CARDINALITY(env.usr.logs.*[]);
+		CREATE FIELD env.usr.logs.*[num].excList;
+		DECLARE lastLog REFERENCE TO env.usr.logs.*[num].excList;
+		CALL CopyBranch(inExcList, lastLog);	
+END;	
+
+CREATE PROCEDURE addLogToEnvironment(IN ref REFERENCE,IN code INT, IN description CHAR, IN logType INTEGER, IN dateTime TIMESTAMP, IN msgBodyBlob BLOB) BEGIN
+	IF NOT EXISTS(ref.log[]) THEN
+		CREATE FIRSTCHILD OF ref AS ref NAME 'log';
+	ELSE
+		CREATE LASTCHILD OF ref AS ref NAME 'log';
+	END IF;
+
+	SET ref.code = code;
+	SET ref.description = description;
+	SET ref.dateTime = dateTime;
+	SET ref.logType = logType;
+	SET ref.msgBody = msgBodyBlob;
+END;
+
+CREATE FUNCTION AddInitialization(IN env REFERENCE, IN TransactionId BLOB,IN ModuleName CHARACTER,IN QueueManagerName CHARACTER,IN BrokerName CHARACTER,IN ExecutionGroupName CHARACTER,IN MessageFlowLabel CHARACTER)		
+BEGIN
+	IF NOT EXISTS(env.usr.logs[]) THEN
+		SET env.usr.logs VALUE = NULL;
+		SET env.usr.logsCommonInfo.transactionId = SUBSTRING(CAST(TransactionId AS CHAR) FROM 3 FOR 48);--GUIDASCHAR();
+		SET env.usr.logsCommonInfo.moduleName = ModuleName;		
+		SET env.usr.logsCommonInfo.sender = QueueManagerName || '\' || BrokerName || '\' || ExecutionGroupName || '\' || MessageFlowLabel;
+	END IF;	
+END;
+
+
+CREATE FUNCTION AddLogSection(IN env REFERENCE, IN Body REFERENCE, IN Code INTEGER, IN AttachBody BOOLEAN, IN LogLevel INTEGER, IN LogDescription CHAR, IN Enc INTEGER)		
+BEGIN
+	DECLARE msgBodyBlob BLOB NULL;
+	IF (AttachBody) THEN
+		SET msgBodyBlob = ASBITSTREAM(Body CCSID Enc);
+	END IF;	
+	CALL addLogToEnvironment(env.usr.logs, Code, LogDescription, LogLevel, CURRENT_TIMESTAMP, msgBodyBlob);
+END;
+
+CREATE FUNCTION AddInCodeLogSection(IN env REFERENCE, IN outRoot REFERENCE, IN attachBody BOOLEAN, IN moduleName CHARACTER, IN logLevel INTEGER, IN code INTEGER, IN logMessage	CHARACTER)
+BEGIN	
+		DECLARE transID BLOB;
+		IF EXISTS(outRoot.MQMD.MsgId[]) THEN
+			SET transID = outRoot.MQMD.MsgId;
+		ELSE
+			SET transID = GUIDASBLOB();
+		END IF;
+		CALL AddInitialization(env, transID, moduleName, QueueManagerName, BrokerName, ExecutionGroupLabel, MessageFlowLabel); 
+		CALL AddLogSection(env, outRoot.*[<], code, attachBody, logLevel, logMessage, 1208);
+END;
+
+
+CREATE PROCEDURE getExceptionInfo(INOUT ref REFERENCE, OUT code INT, OUT descr CHAR)
+BEGIN
+	WHILE (FIELDNAME(ref) <> 'Insert')AND(LASTMOVE(ref)) DO
+		MOVE ref LASTCHILD;
+	END WHILE;
+
+	SET descr = FIELDVALUE(ref.Text);
+
+	MOVE ref PREVIOUSSIBLING;
+	IF CAST(FIELDVALUE(ref) AS CHAR) = 'User exception thrown by throw node' THEN
+		MOVE ref PREVIOUSSIBLING;
+		SET code = CAST(FIELDVALUE(ref) AS INT);
+		MOVE ref NEXTSIBLING;
+
+		MOVE ref NEXTSIBLING;
+		SET descr = FIELDVALUE(ref.Text);
+	ELSE
+		MOVE ref NEXTSIBLING;
+		SET descr = '';
+		WHILE (FIELDNAME(ref) = 'Insert')AND(LASTMOVE(ref)) DO
+			SET descr = descr || FIELDVALUE(ref.Text) || ' | ';
+			MOVE ref PREVIOUSSIBLING;
+		END WHILE;
+		MOVE ref PARENT;
+		SET descr = FIELDVALUE(ref.Text) || ' | ' || descr;
+		SET code = CAST(FIELDVALUE(ref.Number) AS INT);
+	END IF;
+	
+END;
+
+CREATE PROCEDURE GetInCodeExceptionDetails(IN ref REFERENCE, OUT code INTEGER, OUT descr CHARACTER)
+BEGIN
+	WHILE (FIELDNAME(ref) <> 'Insert')AND(LASTMOVE(ref)) DO
+		MOVE ref LASTCHILD;
+	END WHILE;
+	SET descr = FIELDVALUE(ref.Text);
+	MOVE ref PREVIOUSSIBLING;
+	IF CAST(FIELDVALUE(ref) AS CHAR) = 'User exception thrown by throw node' THEN
+		MOVE ref PREVIOUSSIBLING;
+		SET code = CAST(FIELDVALUE(ref) AS INT);
+		MOVE ref NEXTSIBLING;
+		MOVE ref NEXTSIBLING;
+		SET descr = FIELDVALUE(ref.Text);
+	ELSE
+		MOVE ref NEXTSIBLING;
+		SET descr = '';
+		WHILE (FIELDNAME(ref) = 'Insert')AND(LASTMOVE(ref)) DO
+			SET descr = descr || FIELDVALUE(ref.Text) || ' | ';
+			MOVE ref PREVIOUSSIBLING;
+		END WHILE;
+		MOVE ref PARENT;
+		SET descr = FIELDVALUE(ref.Text) || ' | ' || descr;
+		SET code = CAST(FIELDVALUE(ref.Number) AS INT);
+	END IF;
+END;	
+
+CREATE PROCEDURE SaveLogToNextFlow(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
+	   IF NOT EXISTS(outRoot.MQRFH2[]) THEN
+	  	CALL CreateMQRFH2Domain(outRoot);
+	  	CREATE FIELD outRoot.MQRFH2.usr.logsCommonInfo;
+		CALL CopyBranch(env.usr.logsCommonInfo, outRoot.MQRFH2.usr.logsCommonInfo);
+		CREATE FIELD outRoot.MQRFH2.usr.logs;
+		CALL CopyBranch(env.usr.logs, outRoot.MQRFH2.usr.logs);
+	   ELSE
+	   	CREATE FIELD outRoot.MQRFH2.usr.logsCommonInfo;
+		CALL CopyBranch(env.usr.logsCommonInfo, outRoot.MQRFH2.usr.logsCommonInfo);
+		CREATE FIELD outRoot.MQRFH2.usr.logs;
+		CALL CopyBranch(env.usr.logs, outRoot.MQRFH2.usr.logs);
+	   END IF;
+END;	
+
+CREATE PROCEDURE RestoreLogToFlow(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
+	IF EXISTS(inRoot.MQRFH2.usr.logsCommonInfo[]) AND EXISTS(inRoot.MQRFH2.usr.logs[]) THEN
+		SET env.usr.logsCommonInfo[] = inRoot.MQRFH2.usr.logsCommonInfo[];
+		 IF EXISTS(env.usr.logs[]) THEN
+		 	DECLARE logsRef REFERENCE TO inRoot.MQRFH2.usr.logs.log[>];
+		 	WHILE LASTMOVE(logsRef) DO
+		 		CREATE LASTCHILD OF env.usr.logs NAME 'log';
+		 		SET env.usr.logs.log[<] = logsRef;
+		 	MOVE logsRef NEXTSIBLING REPEAT NAME;
+		 	END WHILE;
+		 ELSE
+		CREATE FIELD env.usr.logs;
+		CALL CopyBranch(inRoot.MQRFH2.usr.logs, env.usr.logs);
+		END IF;
+	END IF; 
+END;
+
+CREATE PROCEDURE SaveEnvToRFH2(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
+		IF NOT EXISTS(outRoot.MQRFH2[]) THEN 
+			CALL CreateMQRFH2Domain(outRoot);
+			--CREATE FIELD outRoot.MQRFH2.usr;
+			--CALL CopyBranch(env.usr, outRoot.MQRFH2.usr);
+			CALL CopyBranch(env, outRoot.MQRFH2);
+		ELSE 
+			--CREATE FIELD outRoot.MQRFH2.usr;
+			--CALL CopyBranch(env.usr, outRoot.MQRFH2.usr);
+			CALL CopyBranch(env, outRoot.MQRFH2);
+		END IF; 	
+END;
+
+CREATE PROCEDURE RestoreEnvFromRFH2(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
+	IF EXISTS(inRoot.MQRFH2[]) THEN 
+		SET env = inRoot.MQRFH2;
+	END IF; 
+END;
+
+CREATE PROCEDURE CreateMQMDDomain(IN outRoot REFERENCE)
+BEGIN
+	IF FIELDNAME(outRoot.MQMD) IS NULL THEN
+		CREATE NEXTSIBLING OF outRoot.Properties DOMAIN 'MQMD' NAME 'MQMD';
+	END IF;
+END;
+
+CREATE PROCEDURE CreateMQRFH2Domain(IN outRoot REFERENCE)
+BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	SET outRoot.MQMD.Format = MQFMT_RF_HEADER_2;
+	SET outRoot.MQMD.Encoding = GetDefaultEncoding();
+    SET outRoot.MQMD.CodedCharSetId = GetDefaultCCSID(); 
+	IF FIELDNAME(outRoot.MQRFH2) IS NULL THEN
+		CREATE NEXTSIBLING OF outRoot.MQMD DOMAIN 'MQRFH2' NAME 'MQRFH2';
+	END IF;
+END;
+
+CREATE PROCEDURE CreateMQMDDomainWithExpiry(IN outRoot REFERENCE, IN expiryTime INTEGER, IN replyToQ CHARACTER)
+BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	SET outRoot.MQMD.Report = MQRO_EXPIRATION_WITH_FULL_DATA;
+	SET outRoot.MQMD.Expiry = expiryTime;
+	SET outRoot.MQMD.ReplyToQ = replyToQ;
+	
+END;
+
+CREATE PROCEDURE CreateMQMDDomainWithReplyToQ(IN outRoot REFERENCE, IN replyToQ CHARACTER)
+BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	SET outRoot.MQMD.ReplyToQ = replyToQ;
+END;
+
+CREATE PROCEDURE CreateXMLNSCDomain(IN outRoot REFERENCE)
+BEGIN
+	SET outRoot.Properties.CodedCharSetId = GetDefaultCCSID();
+	IF FIELDNAME(outRoot.XMLNSC) IS NULL THEN
+		CREATE LASTCHILD OF outRoot DOMAIN 'XMLNSC' NAME 'XMLNSC';
+	END IF;
+END;
+
+CREATE PROCEDURE CreateSOAPDomain(IN outRoot REFERENCE)
+BEGIN
+	SET outRoot.Properties.CodedCharSetId = GetDefaultCCSID();
+	IF FIELDNAME(outRoot.SOAP) IS NULL THEN
+		CREATE LASTCHILD OF outRoot DOMAIN 'SOAP' NAME 'SOAP';
+	END IF;
+END;
+
+CREATE PROCEDURE CreateBLOBDomain(IN outRoot REFERENCE)
+BEGIN
+	IF FIELDNAME(outRoot.BLOB) IS NULL THEN
+		CREATE LASTCHILD OF outRoot DOMAIN 'BLOB' NAME 'BLOB';
+	END IF;
+END;
+
+CREATE PROCEDURE CreateJSONDomain(IN outRoot REFERENCE)
+BEGIN
+	IF FIELDNAME(outRoot.JSON) IS NULL THEN
+		CREATE LASTCHILD OF outRoot DOMAIN 'JSON' NAME 'JSON';
+	END IF;
+END;
+
+CREATE PROCEDURE CopyEntireMessage(IN outRoot REFERENCE, IN inRoot REFERENCE) BEGIN
+	SET outRoot = inRoot;
+END;
+
+CREATE FUNCTION isNullOrEmpty(IN value CHARACTER) RETURNS BOOLEAN
+BEGIN	
+	DECLARE tmpvar BOOLEAN value IS NULL OR LENGTH(TRIM(value)) < 1;
+	RETURN tmpvar;	
+END;
+
+CREATE FUNCTION GUIDASCHAR() RETURNS CHARACTER
+BEGIN
+	RETURN SUBSTRING(CAST(GUIDASBLOB() AS CHARACTER) FROM 3 FOR 48);
+END;
+
+CREATE FUNCTION GUIDASBLOB() RETURNS BLOB
+BEGIN
+	DECLARE guid BLOB UUIDASBLOB;
+	SET guid = X'0000000000000000' || guid;
+	RETURN guid;
+END;
+
+CREATE FUNCTION GetDefaultCCSID() RETURNS INT RETURN 1208;
+CREATE FUNCTION GetDefaultEncoding() RETURNS INT RETURN MQENC_NATIVE;

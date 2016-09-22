@@ -1,0 +1,19 @@
+BROKER SCHEMA pochtabank.common.utils.senders
+PATH pochtabank.common.utils;
+
+DECLARE AppReplyToQueueOut EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE RetryDelay_SetExpiry
+
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		CALL CreateMQMDDomainWithExpiry(OutputRoot, CAST(Environment.usr.sender.delay AS INT), AppReplyToQueueOut);
+		CALL SaveEnvToRFH2(OutputRoot, Environment);
+	RETURN TRUE;
+	END;
+	
+END MODULE;
+
+

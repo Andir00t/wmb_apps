@@ -1,0 +1,23 @@
+BROKER SCHEMA pochtabank.common.utils.senders
+
+DECLARE srvName EXTERNAL CHAR '';
+DECLARE dbSource EXTERNAL CHARACTER '' ;
+DECLARE tableConfigsName EXTERNAL CHARACTER '';
+
+CREATE DATABASE MODULE RetryProcessBeforeWS_UpdateCache
+CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		DECLARE query CHAR 'SELECT * FROM '|| tableConfigsName || ' WHERE SRVNAME=''' || srvName || ''' ;';
+		DECLARE CACHE_ROUTE_TABLE ROW ROW(PASSTHRU(query TO Database.{dbSource}) AS parameter);
+		IF EXISTS(CACHE_ROUTE_TABLE.parameter[]) THEN
+			SET Retry = CACHE_ROUTE_TABLE.parameter.RETRY;
+			SET Delay = CACHE_ROUTE_TABLE.parameter.DELAY * 600;
+			SET Environment.usr.sender.retry = CACHE_ROUTE_TABLE.parameter.RETRY;
+			SET Environment.usr.sender.delay = CACHE_ROUTE_TABLE.parameter.DELAY * 600; -- Expiry считается в децисекундах.
+			RETURN TRUE;
+		ELSE 
+			PROPAGATE TO TERMINAL 'out1';
+			RETURN FALSE;
+		END IF;
+	END;
+END MODULE;

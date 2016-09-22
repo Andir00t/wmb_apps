@@ -3,9 +3,8 @@
 	<name>Pochtabank.SRVEFRSB.App</name>
 	<comment></comment>
 	<projects>
-		<project>Pochtabank.COMMON.V1.lib</project>
 		<project>InterfaxWSJava</project>
-		<project>Pochtabank.SRVEFRSB.V2.Java</project>
+		<project>Pochtabank.COMMON.lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

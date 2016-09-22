@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:pochtabank_common_utils_senders_RetryDelay.subflow="pochtabank/common/utils/senders/RetryDelay.subflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/common/utils/senders/RetryProcessAfterWS.subflow"
+    nsPrefix="pochtabank_common_utils_senders_RetryProcessAfterWS.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.customModuleName" name="customModuleName" lowerBound="1" defaultValueLiteral="define log module name">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueOut" name="AppReplyToQueueOut" lowerBound="1" defaultValueLiteral="RetryQ">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="SharedRetryQ">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="RetryProcessAfterWS" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.COMMON.V1.lib/icons/full/obj16/RetryProcessAfterWS.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.COMMON.V1.lib/icons/full/obj30/RetryProcessAfterWS.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="47,40">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Failure In" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="134,115" computeExpression="esql://routine/pochtabank.common.utils.senders#RetryProcessAfterWS_CheckAttempts.Main">
+        <translation xmi:type="utility:ConstantString" string="Check Attempts"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="263,49">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Failure" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output2" location="266,116">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Fault" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input1" location="42,183">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.Fault In" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_senders_RetryDelay.subflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="259,182">
+        <translation xmi:type="utility:ConstantString" string="RetryDelay"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_1" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_1" sourceNode="InTerminal.Input1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Input"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="OutTerminal.Output2" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out1" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.out2" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.LogProps" configurable="true" userDefined="true" describedAttribute="Property.customModuleName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.customModuleName" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+        <propertyDescriptor groupName="Group.MQProps" configurable="true" userDefined="true" describedAttribute="Property.AppReplyToQueueOut">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.AppReplyToQueueOut" bundleName="pochtabank/common/utils/senders/RetryDelay" pluginId="Pochtabank.COMMON.V1.lib"/>
+          <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.SharedRetryQueue">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.SharedRetryQueue" bundleName="pochtabank/common/utils/senders/RetryDelay" pluginId="Pochtabank.COMMON.V1.lib"/>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.AppReplyToQueueOut" overriddenNodes="FCMComposite_1_4">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryDelay.subflow#Property.AppReplyToQueueOut"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.SharedRetryQueue" overriddenNodes="FCMComposite_1_4">
+      <overriddenAttribute href="pochtabank/common/utils/senders/RetryDelay.subflow#Property.SharedRetryQueue"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>

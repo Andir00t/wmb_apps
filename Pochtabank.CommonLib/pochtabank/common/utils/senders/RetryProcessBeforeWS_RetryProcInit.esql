@@ -1,0 +1,36 @@
+BROKER SCHEMA pochtabank.common.utils.senders
+PATH pochtabank.common.utils;
+
+DECLARE Retry SHARED INTEGER 0;
+DECLARE Delay SHARED INTEGER 0;
+
+CREATE COMPUTE MODULE RetryProcessBeforeWS_RetryProcInit
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		IF EXISTS(InputRoot.MQRFH2.usr.sender[]) THEN
+			CALL RestoreEnvFromRFH2(InputRoot, Environment);
+			SET Retry = Environment.usr.sender.retry;
+			SET Delay = Environment.usr.sender.delay; 
+		ELSE
+			SET Environment.usr.sender.attemptCount = 1;
+			SET Environment.usr.sender.inputMsg = InputRoot.XMLNSC;
+			SET Environment.usr.sender.retry = Retry;
+			SET Environment.usr.sender.delay = Delay;
+		END IF;
+		IF Retry <> 0 AND Delay <> 0 THEN
+		    PROPAGATE TO TERMINAL 'out';
+		ELSE 
+			PROPAGATE TO TERMINAL 'out1';
+		END IF;
+		RETURN FALSE;
+	END;
+END MODULE;
+
+
+
+
+
+
+

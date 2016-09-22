@@ -1,0 +1,27 @@
+BROKER SCHEMA pochtabank.common.utils.logging
+PATH pochtabank.common.utils;
+
+DECLARE attachBody 			EXTERNAL BOOLEAN false;
+DECLARE logLevel 			EXTERNAL INT 0;  
+DECLARE logMessage 			EXTERNAL CHAR 'not defined';	
+DECLARE moduleName 			EXTERNAL CHAR 'not defined';
+DECLARE isErrorLog 			EXTERNAL BOOLEAN false;
+
+
+CREATE COMPUTE MODULE AddLog_AddLog
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		CALL AddInitialization(Environment, InputRoot.MQMD.MsgId ,moduleName, QueueManagerName, BrokerName, ExecutionGroupLabel, MessageFlowLabel); 
+		CALL AddLogSection(Environment, OutputRoot.*[<], logLevel, attachBody, logLevel, logMessage, 1208);
+		IF isErrorLog THEN
+			PROPAGATE TO TERMINAL 'out1';
+			RETURN FALSE;
+		ELSE
+			RETURN TRUE;
+		END IF;											  
+	END;
+	
+
+END MODULE;

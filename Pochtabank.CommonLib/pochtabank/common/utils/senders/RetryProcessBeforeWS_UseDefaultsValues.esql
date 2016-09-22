@@ -1,0 +1,18 @@
+BROKER SCHEMA pochtabank.common.utils.senders
+
+DECLARE DEFAULT_RETRY EXTERNAL INTEGER 0;
+DECLARE DEFAULT_DELAY EXTERNAL INTEGER 0;
+
+CREATE COMPUTE MODULE RetryProcessBeforeWS_UseDefaultsValues
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+		SET OutputRoot = InputRoot;
+		SET OutputLocalEnvironment = InputLocalEnvironment;
+		SET OutputExceptionList = NULL;
+		SET Retry = DEFAULT_RETRY;
+		SET Delay = DEFAULT_DELAY * 600;
+		SET Environment.usr.sender.retry = DEFAULT_RETRY;
+		SET Environment.usr.sender.delay = DEFAULT_DELAY * 600;
+		RETURN TRUE;
+	END;
+END MODULE;

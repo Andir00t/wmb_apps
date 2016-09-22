@@ -1,0 +1,69 @@
+BROKER SCHEMA pochtabank.common.utils.senders
+PATH pochtabank.common.utils;
+
+DECLARE customModuleName EXTERNAL CHARACTER '';
+
+CREATE COMPUTE MODULE RetryProcessAfterWS_CheckAttempts
+	CREATE FUNCTION Main() RETURNS BOOLEAN
+	BEGIN
+	
+		DECLARE attemptCount INT Environment.usr.sender.attemptCount;
+		DECLARE retry INT Environment.usr.sender.retry;
+				
+		IF EXISTS(InputExceptionList.*[]) THEN
+			DECLARE codeError INTEGER 0;
+			DECLARE errorDescription CHARACTER '';
+			SET Environment.usr.sender.failureMsg = InputExceptionList;
+			DELETE FIELD InputExceptionList;
+			CALL GetInCodeExceptionDetails(Environment.usr.sender.failureMsg, codeError, errorDescription);
+		    IF (attemptCount <= retry) THEN
+		    CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, codeError, 'Вызов сервиса не удался. Попытка ' || 
+		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' ||  errorDescription);
+		    END IF;
+    	ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:Fault[]) THEN
+			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:Fault;
+			SET Environment.usr.sender.soapFaultMsg = InputRoot.SOAP.Body;
+			IF (attemptCount <= retry) THEN
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, 0, 'Вызов сервиса не удался. Попытка ' || 
+		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' ||  fault.*:faultcode || ' | ' || fault.*:faultstring);
+			END IF;
+    	ELSE
+			SET Environment.usr.sender.HTTPfaultMsg = InputRoot.XMLNSC;
+			IF (attemptCount <= retry) THEN
+			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, 0, 'Вызов сервиса не удался. Попытка ' || 
+		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' || Environment.usr.sender.HTTPfaultMsg);
+			END IF;
+		END IF;
+		 		
+		IF (attemptCount <= retry) THEN
+			CALL CreateXMLNSCDomain(OutputRoot);
+			SET OutputRoot.XMLNSC = Environment.usr.sender.inputMsg;
+			SET Environment.usr.sender.attemptCount = attemptCount + 1;
+			PROPAGATE TO TERMINAL 'out';
+		ELSE
+			IF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.HTTPfaultMsg[])) THEN
+				CALL CreateXMLNSCDomain(OutputRoot);
+				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
+				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				PROPAGATE TO TERMINAL 'out2';
+			ELSEIF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.soapFaultMsg[])) THEN				
+				CALL CreateSOAPDomain(OutputRoot);
+				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
+				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				PROPAGATE TO TERMINAL 'out2';
+			ELSEIF EXISTS(Environment.usr.sender.soapFaultMsg[]) THEN
+				CALL CreateSOAPDomain(OutputRoot);
+				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
+				PROPAGATE TO TERMINAL 'out1';
+			ELSEIF EXISTS(Environment.usr.sender.HTTPfaultMsg[]) THEN
+				CALL CreateXMLNSCDomain(OutputRoot);
+				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
+				PROPAGATE TO TERMINAL 'out1';
+			ELSE
+				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				PROPAGATE TO TERMINAL 'out2';
+			END IF;
+		END IF;
+		RETURN FALSE;
+	END;
+END MODULE;
