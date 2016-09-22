@@ -4,7 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>InterfaxWSJava</project>
-		<project>Pochtabank.COMMON.lib</project>
+		<project>Pochtabank.COMMON.V1.lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

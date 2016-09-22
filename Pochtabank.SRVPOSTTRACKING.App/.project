@@ -3,7 +3,7 @@
 	<name>Pochtabank.SRVPOSTTRACKING.App</name>
 	<comment></comment>
 	<projects>
-		<project>Pochtabank.COMMON.lib</project>
+		<project>Pochtabank.COMMON.V1.lib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
