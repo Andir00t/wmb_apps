@@ -35,9 +35,6 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.QToSendToGetResult" name="QToSendToGetResult" lowerBound="1" defaultValueLiteral="LETOBANK.ADP.ADPESIA.V1.GETRESULT.REQ">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.ADPRetryQName" name="ADPRetryQName" defaultValueLiteral="ADPESIA_RESEND">
-      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.moduleName" name="moduleName" lowerBound="1" defaultValueLiteral="ADPESIA">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
@@ -74,7 +71,7 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Proxy.internal_npcompiler" name="Proxy.internal_npcompiler">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL" name="webServiceURL" defaultValueLiteral="http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL" name="webServiceURL" defaultValueLiteral="http://smev-mvf.test.gosuslugi.ru:7777/gateway/services/SID0004151qq">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.webServiceURL.internal_npcompiler" name="webServiceURL.internal_npcompiler">
@@ -102,7 +99,7 @@
       <nodes xmi:type="ComIbmMQReply.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_8" location="829,320">
         <translation xmi:type="utility:ConstantString" string="MQ Reply1"/>
       </nodes>
-      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_14" location="651,85" queueName="ADPESIA_ERROR">
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_14" location="656,85" queueName="ADPESIA_ERROR">
         <translation xmi:type="utility:ConstantString" string="ADP Error"/>
       </nodes>
       <nodes xmi:type="pochtabank_adpesia_v1_utils_pochtabank_adpesia_v1_transform_sign.subflow:FCMComposite_1" xmi:id="FCMComposite_1_19" location="533,317" Proxy.internal_npcompiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler">
@@ -181,37 +178,34 @@
                         <propertyName xmi:type="utility:TranslatableString" key="Property.ToGetResultMsgExpiry_ms" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
                         <propertyDescriptor groupName="Group.MQProps" configurable="true" userDefined="true" describedAttribute="Property.QToSendToGetResult">
                           <propertyName xmi:type="utility:TranslatableString" key="Property.QToSendToGetResult" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
-                          <propertyDescriptor groupName="Group.MQProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.ADPRetryQName">
-                            <propertyName xmi:type="utility:TranslatableString" key="Property.ADPRetryQName" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend" pluginId="Pochtabank.ADPESIA.App"/>
-                            <propertyDescriptor groupName="Group.LogProps" configurable="true" userDefined="true" describedAttribute="Property.moduleName">
-                              <propertyName xmi:type="utility:TranslatableString" key="Property.moduleName" bundleName="pochtabank/common/utils/logging/AddLog" pluginId="Pochtabank.COMMON.V1.lib"/>
-                              <propertyDescriptor groupName="Group.DBProps" configurable="true" describedAttribute="Property.dataSource">
-                                <propertyName xmi:type="utility:TranslatableString" key="Property.dataSource" bundleName="ComIbmDatabase" pluginId="com.ibm.etools.mft.ibmnodes"/>
-                                <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.dbSource">
-                                  <propertyName xmi:type="utility:TranslatableString" key="Property.dbSource" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
-                                  <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_DELAY_min">
-                                    <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_DELAY_min" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
-                                    <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_RETRY">
-                                      <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_RETRY" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
-                                      <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.srvName">
-                                        <propertyName xmi:type="utility:TranslatableString" key="Property.srvName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
-                                        <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.tableConfigsName">
-                                          <propertyName xmi:type="utility:TranslatableString" key="Property.tableConfigsName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
-                                          <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStoreAlias">
-                                            <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStoreAlias" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
-                                            <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStorePass">
-                                              <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStorePass" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
-                                              <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStoreType">
-                                                <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStoreType" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
-                                                <propertyDescriptor groupName="Group.ESIAServiceProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.soap.http.GenericSOAPOverHTTPStringPropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler" configurable="true" describedAttribute="Property.Proxy">
-                                                  <propertyName xmi:type="utility:TranslatableString" key="Property.Proxy" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
-                                                  <propertyDescriptor groupName="Group.InternalRuntimeGroup" readOnly="true" hidden="true" userDefined="true" describedAttribute="Property.Proxy.internal_npcompiler">
-                                                    <propertyName xmi:type="utility:TranslatableString" key="Property.Proxy.internal_npcompiler" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
-                                                    <propertyDescriptor groupName="Group.ESIAServiceProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.soap.http.SOAP_Over_HTTP_WebServicesURLPropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler" configurable="true" describedAttribute="Property.webServiceURL">
-                                                      <propertyName xmi:type="utility:TranslatableString" key="Property.webServiceURL" bundleName="ComIbmSOAPRequest" pluginId="com.ibm.etools.mft.ibmnodes"/>
-                                                      <propertyDescriptor groupName="Group.InternalRuntimeGroup" readOnly="true" hidden="true" userDefined="true" describedAttribute="Property.webServiceURL.internal_npcompiler">
-                                                        <propertyName xmi:type="utility:TranslatableString" key="Property.webServiceURL.internal_npcompiler" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
-                                                      </propertyDescriptor>
+                          <propertyDescriptor groupName="Group.LogProps" configurable="true" userDefined="true" describedAttribute="Property.moduleName">
+                            <propertyName xmi:type="utility:TranslatableString" key="Property.moduleName" bundleName="pochtabank/common/utils/logging/AddLog" pluginId="Pochtabank.COMMON.V1.lib"/>
+                            <propertyDescriptor groupName="Group.DBProps" configurable="true" describedAttribute="Property.dataSource">
+                              <propertyName xmi:type="utility:TranslatableString" key="Property.dataSource" bundleName="ComIbmDatabase" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                              <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.dbSource">
+                                <propertyName xmi:type="utility:TranslatableString" key="Property.dbSource" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_DELAY_min">
+                                  <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_DELAY_min" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
+                                  <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.DEFAULT_RETRY">
+                                    <propertyName xmi:type="utility:TranslatableString" key="Property.DEFAULT_RETRY" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                    <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.srvName">
+                                      <propertyName xmi:type="utility:TranslatableString" key="Property.srvName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                      <propertyDescriptor groupName="Group.DBProps" configurable="true" userDefined="true" describedAttribute="Property.tableConfigsName">
+                                        <propertyName xmi:type="utility:TranslatableString" key="Property.tableConfigsName" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>
+                                        <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStoreAlias">
+                                          <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStoreAlias" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
+                                          <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStorePass">
+                                            <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStorePass" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
+                                            <propertyDescriptor groupName="Group.CryptoProps" configurable="true" userDefined="true" describedAttribute="Property.KeyStoreType">
+                                              <propertyName xmi:type="utility:TranslatableString" key="Property.KeyStoreType" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
+                                              <propertyDescriptor groupName="Group.ESIAServiceProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.soap.http.GenericSOAPOverHTTPStringPropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler" configurable="true" describedAttribute="Property.Proxy">
+                                                <propertyName xmi:type="utility:TranslatableString" key="Property.Proxy" bundleName="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign" pluginId="Pochtabank.ADPESIA.App"/>
+                                                <propertyDescriptor groupName="Group.InternalRuntimeGroup" readOnly="true" hidden="true" userDefined="true" describedAttribute="Property.Proxy.internal_npcompiler">
+                                                  <propertyName xmi:type="utility:TranslatableString" key="Property.Proxy.internal_npcompiler" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
+                                                  <propertyDescriptor groupName="Group.ESIAServiceProps" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.soap.http.SOAP_Over_HTTP_WebServicesURLPropertyEditor" compiler="com.ibm.etools.mft.ibmnodes.compilers.GenericSOAPCompiler" configurable="true" describedAttribute="Property.webServiceURL">
+                                                    <propertyName xmi:type="utility:TranslatableString" key="Property.webServiceURL" bundleName="ComIbmSOAPRequest" pluginId="com.ibm.etools.mft.ibmnodes"/>
+                                                    <propertyDescriptor groupName="Group.InternalRuntimeGroup" readOnly="true" hidden="true" userDefined="true" describedAttribute="Property.webServiceURL.internal_npcompiler">
+                                                      <propertyName xmi:type="utility:TranslatableString" key="Property.webServiceURL.internal_npcompiler" bundleName="pochtabank/adpesia/v1/adp/pochtabank_adpesia_v1_getesia_result_req" pluginId="Pochtabank.ADPESIA.App"/>
                                                     </propertyDescriptor>
                                                   </propertyDescriptor>
                                                 </propertyDescriptor>
@@ -246,7 +240,7 @@
     <attributeLinks promotedAttribute="Property.ADPConvertToGetResultQName" overriddenNodes="FCMComposite_1_1">
       <overriddenAttribute href="ComIbmMQInput.msgnode#Property.queueName"/>
     </attributeLinks>
-    <attributeLinks promotedAttribute="Property.ESIA_FaultQName" overriddenNodes="FCMComposite_1_4">
+    <attributeLinks promotedAttribute="Property.ESIA_FaultQName" overriddenNodes="FCMComposite_1_4 FCMComposite_1_14">
       <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
     </attributeLinks>
     <attributeLinks promotedAttribute="Property.ADPOutputQName" overriddenNodes="FCMComposite_1_6">
@@ -261,14 +255,14 @@
     <attributeLinks promotedAttribute="Property.SharedRetryQueue" overriddenNodes="FCMComposite_1_19">
       <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_transform_sign.subflow#Property.SharedRetryQueue"/>
     </attributeLinks>
+    <attributeLinks promotedAttribute="Property.SharedRetryQueue" overriddenNodes="FCMComposite_1_20">
+      <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend.subflow#Property.ADPRetryQName"/>
+    </attributeLinks>
     <attributeLinks promotedAttribute="Property.ToGetResultMsgExpiry_ms" overriddenNodes="FCMComposite_1_20">
       <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend.subflow#Property.MsgExpiry_ms"/>
     </attributeLinks>
     <attributeLinks promotedAttribute="Property.QToSendToGetResult" overriddenNodes="FCMComposite_1_20">
       <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend.subflow#Property.QueueToSend"/>
-    </attributeLinks>
-    <attributeLinks promotedAttribute="Property.ADPRetryQName" overriddenNodes="FCMComposite_1_20">
-      <overriddenAttribute href="pochtabank/adpesia/v1/utils/pochtabank_adpesia_v1_resend.subflow#Property.ADPRetryQName"/>
     </attributeLinks>
     <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_3 FCMComposite_1_24 FCMComposite_1_2 FCMComposite_1_22 FCMComposite_1_26 FCMComposite_1_23 FCMComposite_1_25">
       <overriddenAttribute href="pochtabank/common/utils/logging/AddLog.subflow#Property.moduleName"/>

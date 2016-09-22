@@ -11,9 +11,9 @@ CREATE COMPUTE MODULE pochtabank_adpesia_v1_resend_Set_Expiry
 		CALL CopyEntireMessage(OutputRoot, InputRoot);
 		CALL CreateMQRFH2DomainWithReplyToQ(OutputRoot, Environment.adpInputMsgData.MQMD.ReplytoQ);
 		CALL SaveRFH2UsrInputMsgOut(OutputRoot, Environment);
-		CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'ADPESIA', 0, 0, 'Результат не готов. Повторный запрос через ' || CAST(MsgExpiry_ms/1000 AS CHARACTER) || ' секунд');
+		CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, 'ADPESIA', 0, 0, 'Результат не готов. Повторный запрос через ' || CAST(MsgExpiry_ms/1000 AS CHARACTER) || ' секунд(ы)');
 		CALL SaveLogToNextFlow(OutputRoot, Environment);
-		CALL CreateMQMDDomainWithExpiry(OutputRoot, MsgExpiry_ms/10, QueueToSend);
+		CALL CreateMQMDDomainWithExpiry(OutputRoot, MsgExpiry_ms/100, QueueToSend);
 	
 		RETURN TRUE;
 	END;

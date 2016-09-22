@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ComIbmWSRequest.msgnode="ComIbmWSRequest.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/common/utils/logger/pochtabank_common_utils_logger_v1_dflt.msgflow" nsPrefix="pochtabank_common_utils_logger_pochtabank_common_utils_logger_v1_dflt.msgflow">
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQInput.msgnode="ComIbmMQInput.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ComIbmTrace.msgnode="ComIbmTrace.msgnode" xmlns:ComIbmWSRequest.msgnode="ComIbmWSRequest.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/common/utils/logger/pochtabank_common_utils_logger_v1_dflt.msgflow"
+    nsPrefix="pochtabank_common_utils_logger_pochtabank_common_utils_logger_v1_dflt.msgflow">
   <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
     <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.elasticUrl" name="elasticUrl" lowerBound="1" defaultValueLiteral="http://localhost:9200">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.elasticUrl" name="elasticUrl" lowerBound="1" defaultValueLiteral="http://172.18.17.87:9200">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.elasticIdx" name="elasticIdx" lowerBound="1" defaultValueLiteral="esb_local">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.elasticIdx" name="elasticIdx" lowerBound="1" defaultValueLiteral="esb_plike">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.elasticTimeoutMSec" name="elasticTimeoutMSec" lowerBound="1" defaultValueLiteral="2000">

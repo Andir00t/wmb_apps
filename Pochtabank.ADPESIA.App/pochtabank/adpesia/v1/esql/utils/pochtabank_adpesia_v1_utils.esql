@@ -137,7 +137,8 @@ END;
 CREATE FUNCTION CreateOutputXMLNSC(IN OutputRoot REFERENCE) BEGIN
 	
 		CALL CreateXMLNSCDomain(OutputRoot);
-		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+		--SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+		CREATE FIRSTCHILD OF OutputRoot.XMLNSC TYPE XMLNSC.XmlDeclaration NAME 'XmlDeclaration';
       	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
       	SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
 		CREATE FIELD OutputRoot.XMLNSC.pbns:OutputMessage;
@@ -308,7 +309,8 @@ END;
 CREATE FUNCTION CreateInputXMLNSC(IN OutputRoot REFERENCE) BEGIN
 	
 		CALL CreateXMLNSCDomain(OutputRoot);
-		SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+		--SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration) = '';
+		CREATE FIRSTCHILD OF OutputRoot.XMLNSC TYPE XMLNSC.XmlDeclaration NAME 'XmlDeclaration';
 	    SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)version = '1.0';
 	    SET OutputRoot.XMLNSC.(XMLNSC.XmlDeclaration).(XMLNSC.Attribute)encoding = 'UTF-8';
 		CREATE FIELD OutputRoot.XMLNSC.pbns:InputMessage;
