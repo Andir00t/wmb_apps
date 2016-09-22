@@ -153,8 +153,13 @@ CREATE PROCEDURE RestoreLogToFlow(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
 		 	MOVE logsRef NEXTSIBLING REPEAT NAME;
 		 	END WHILE;
 		 ELSE
-		CREATE FIELD env.usr.logs;
-		CALL CopyBranch(inRoot.MQRFH2.usr.logs, env.usr.logs);
+		  CREATE FIELD env.usr.logs;
+		  DECLARE logsRef REFERENCE TO inRoot.MQRFH2.usr.logs.log[>];
+		 	WHILE LASTMOVE(logsRef) DO
+		 		CREATE LASTCHILD OF env.usr.logs NAME 'log';
+		 		SET env.usr.logs.log[<] = logsRef;
+		 	MOVE logsRef NEXTSIBLING REPEAT NAME;
+		 	END WHILE;
 		END IF;
 	END IF; 
 END;
