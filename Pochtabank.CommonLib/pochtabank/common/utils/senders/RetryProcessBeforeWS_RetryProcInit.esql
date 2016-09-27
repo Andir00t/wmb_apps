@@ -15,9 +15,10 @@ CREATE COMPUTE MODULE RetryProcessBeforeWS_RetryProcInit
 			SET Delay = Environment.usr.sender.delay; 
 		ELSE
 			SET Environment.usr.sender.attemptCount = 1;
-			SET Environment.usr.sender.inputMsg = InputRoot.XMLNSC;
 			SET Environment.usr.sender.retry = Retry;
 			SET Environment.usr.sender.delay = Delay;
+			CALL SaveMsgToRetry(InputRoot, Environment);
+			
 		END IF;
 		IF Retry <> 0 AND Delay <> 0 THEN
 		    PROPAGATE TO TERMINAL 'out';

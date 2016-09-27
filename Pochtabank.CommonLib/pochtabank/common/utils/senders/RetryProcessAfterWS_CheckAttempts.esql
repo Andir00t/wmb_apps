@@ -36,26 +36,39 @@ CREATE COMPUTE MODULE RetryProcessAfterWS_CheckAttempts
 		END IF;
 		 		
 		IF (attemptCount <= retry) THEN
-			CALL CreateXMLNSCDomain(OutputRoot);
-			SET OutputRoot.XMLNSC = Environment.usr.sender.inputMsg;
+			IF FIELDNAME(Environment.usr.sender.inputMsg.XMLNSC.(XMLNSC.Element)[>]) IS NOT NULL THEN
+				CALL CreateXMLNSCDomain(OutputRoot);
+				SET OutputRoot.XMLNSC = Environment.usr.sender.inputMsg.XMLNSC;
+			ELSE
+				CALL CreateSOAPDomain(OutputRoot);
+				SET OutputRoot.SOAP = Environment.usr.sender.inputMsg.SOAP;	
+			END IF;	
 			SET Environment.usr.sender.attemptCount = attemptCount + 1;
 			PROPAGATE TO TERMINAL 'out';
 		ELSE
 			IF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.HTTPfaultMsg[])) THEN
+				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveLogToNextFlow(OutputRoot, Environment);
 				CALL CreateXMLNSCDomain(OutputRoot);
 				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
 				SET OutputExceptionList = Environment.usr.sender.failureMsg;
 				PROPAGATE TO TERMINAL 'out2';
 			ELSEIF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.soapFaultMsg[])) THEN				
+				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveLogToNextFlow(OutputRoot, Environment);
 				CALL CreateSOAPDomain(OutputRoot);
 				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
 				SET OutputExceptionList = Environment.usr.sender.failureMsg;
 				PROPAGATE TO TERMINAL 'out2';
 			ELSEIF EXISTS(Environment.usr.sender.soapFaultMsg[]) THEN
+				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveLogToNextFlow(OutputRoot, Environment);
 				CALL CreateSOAPDomain(OutputRoot);
 				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
 				PROPAGATE TO TERMINAL 'out1';
 			ELSEIF EXISTS(Environment.usr.sender.HTTPfaultMsg[]) THEN
+				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveLogToNextFlow(OutputRoot, Environment);
 				CALL CreateXMLNSCDomain(OutputRoot);
 				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
 				PROPAGATE TO TERMINAL 'out1';

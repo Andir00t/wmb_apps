@@ -167,12 +167,8 @@ END;
 CREATE PROCEDURE SaveEnvToRFH2(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
 		IF NOT EXISTS(outRoot.MQRFH2[]) THEN 
 			CALL CreateMQRFH2Domain(outRoot);
-			--CREATE FIELD outRoot.MQRFH2.usr;
-			--CALL CopyBranch(env.usr, outRoot.MQRFH2.usr);
 			CALL CopyBranch(env, outRoot.MQRFH2);
 		ELSE 
-			--CREATE FIELD outRoot.MQRFH2.usr;
-			--CALL CopyBranch(env.usr, outRoot.MQRFH2.usr);
 			CALL CopyBranch(env, outRoot.MQRFH2);
 		END IF; 	
 END;
@@ -182,6 +178,37 @@ CREATE PROCEDURE RestoreEnvFromRFH2(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
 		SET env = inRoot.MQRFH2;
 	END IF; 
 END;
+
+CREATE PROCEDURE SaveMsgToRetry(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
+	CREATE FIELD env.usr.sender.inputMsg;
+	CREATE FIELD env.usr.sender.inputMsg.MQMD;
+	IF FIELDNAME(inRoot.XMLNSC.(XMLNSC.Element)[>]) IS NOT NULL THEN
+		CALL CreateXMLNSCDomain(env.usr.sender.inputMsg);
+		SET env.usr.sender.inputMsg.XMLNSC = inRoot.XMLNSC;
+	ELSE
+		CALL CreateSOAPDomain(env.usr.sender.inputMsg);
+		SET env.usr.sender.inputMsg.SOAP = inRoot.SOAP;		
+	END IF;	
+ 	SET env.usr.sender.inputMsg.MQMD.ReplyToQ = inRoot.MQMD.ReplyToQ;
+ 	SET env.usr.sender.inputMsg.MQMD.ReplyToQMgr = inRoot.MQMD.ReplyToQMgr;
+ 	IF EXISTS(inRoot.MQRFH2[]) THEN
+ 		CREATE FIELD env.usr.sender.inputMsg.MQRFH2;
+ 		SET env.usr.sender.inputMsg.MQRFH2.usr = inRoot.MQRFH2.usr;
+ 	END IF;
+ 	
+END; 
+
+
+CREATE PROCEDURE RestoreMsgToRetry(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	SET outRoot.MQMD.ReplyToQ = env.usr.sender.inputMsg.MQMD.ReplyToQ;
+	SET outRoot.MQMD.ReplyToQMgr = env.usr.sender.inputMsg.MQMD.ReplyToQMgr;
+	IF EXISTS(env.usr.sender.inputMsg.MQRFH2[]) THEN
+	CALL CreateMQRFH2Domain(outRoot);
+	SET outRoot.MQRFH2.usr = env.usr.sender.inputMsg.MQRFH2.usr;
+	END IF;	
+END; 
+
 
 CREATE PROCEDURE CreateMQMDDomain(IN outRoot REFERENCE)
 BEGIN
@@ -218,10 +245,25 @@ END;
 
 CREATE PROCEDURE CreateXMLNSCDomain(IN outRoot REFERENCE)
 BEGIN
-	SET outRoot.Properties.CodedCharSetId = GetDefaultCCSID();
+	
 	IF FIELDNAME(outRoot.XMLNSC) IS NULL THEN
+		SET outRoot.Properties.CodedCharSetId = GetDefaultCCSID();
 		CREATE LASTCHILD OF outRoot DOMAIN 'XMLNSC' NAME 'XMLNSC';
 	END IF;
+END;
+
+CREATE PROCEDURE CreateDomainsXMLNSC(IN outRoot REFERENCE)
+BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	CALL CreateMQRFH2Domain(outRoot);
+	CALL CreateXMLNSCDomain(outRoot);
+END;
+
+CREATE PROCEDURE CreateDomainsSOAP(IN outRoot REFERENCE)
+BEGIN
+	CALL CreateMQMDDomain(outRoot);
+	CALL CreateMQRFH2Domain(outRoot);
+	CALL CreateSOAPDomain(outRoot);
 END;
 
 CREATE PROCEDURE CreateSOAPDomain(IN outRoot REFERENCE)
