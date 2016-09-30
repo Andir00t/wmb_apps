@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ComIbmCompute.msgnode="ComIbmCompute.msgnode" xmlns:ComIbmMQOutput.msgnode="ComIbmMQOutput.msgnode" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:eflow="http://www.ibm.com/wbi/2005/eflow" xmlns:pochtabank_common_utils_logging_AddLog.subflow="pochtabank/common/utils/logging/AddLog.subflow" xmlns:pochtabank_common_utils_logging_SendLogToQueue.subflow="pochtabank/common/utils/logging/SendLogToQueue.subflow" xmlns:utility="http://www.ibm.com/wbi/2005/eflow_utility" nsURI="pochtabank/common/utils/handlers/ErrorHander.subflow"
+    nsPrefix="pochtabank_common_utils_handlers_ErrorHander.subflow">
+  <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1" useDefaults="true" udpSupport="true">
+    <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.moduleName" name="moduleName" lowerBound="1" defaultValueLiteral="BrokerPOSFileAdapter_CRMA">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.QueueSignal" name="QueueSignal">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.QueueLog" name="QueueLog" defaultValueLiteral="LOG_TO_ELASTIC">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.QueueLogFatal" name="QueueLogFatal" defaultValueLiteral="LETOBANK.SRV.FATAL">
+      <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <translation xmi:type="utility:TranslatableString" key="ErrorHander" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.COMMON.V1.lib/icons/full/obj16/ErrorHander.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.COMMON.V1.lib/icons/full/obj30/ErrorHander.gif"/>
+    <composition>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input" location="41,168">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.BadMsgInput" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output" location="320,28">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.ReturnToMainFlow" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input1" location="40,28">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.TryCatchInput" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSource" xmi:id="InTerminal.Input2" location="43,277">
+        <translation xmi:type="utility:TranslatableString" key="InTerminal.FatalErrInput" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="eflow:FCMSink" xmi:id="OutTerminal.Output1" location="341,380">
+        <translation xmi:type="utility:TranslatableString" key="OutTerminal.Catch" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_1" location="172,28" isErrorLog="false" attachBody="true" logMessage="Message is received">
+        <translation xmi:type="utility:ConstantString" string="Log: Get message"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_2" location="160,168" attachBody="true" logLevel="1" logMessage="Bad message is received">
+        <translation xmi:type="utility:ConstantString" string="Log: Failure Message"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_AddLog.subflow:FCMComposite_1" xmi:id="FCMComposite_1_3" location="163,277" attachBody="true" logLevel="1" logMessage="Internal error.">
+        <translation xmi:type="utility:ConstantString" string="Log: Catch Message"/>
+      </nodes>
+      <nodes xmi:type="pochtabank_common_utils_logging_SendLogToQueue.subflow:FCMComposite_1" xmi:id="FCMComposite_1_4" location="322,168" QueueLog="LOG_TO_ELASTIC">
+        <translation xmi:type="utility:ConstantString" string="SendLogToQueue"/>
+      </nodes>
+      <nodes xmi:type="ComIbmMQOutput.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_5" location="312,277">
+        <translation xmi:type="utility:ConstantString" string="Send: to SignalQueue"/>
+      </nodes>
+      <nodes xmi:type="ComIbmCompute.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_6" location="485,273" computeExpression="esql://routine/pochtabank.common.utils.handlers#ErrorHander_Stub.Main">
+        <translation xmi:type="utility:ConstantString" string="Stub"/>
+      </nodes>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_1" targetNode="FCMComposite_1_1" sourceNode="InTerminal.Input1" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_2" targetNode="FCMComposite_1_2" sourceNode="InTerminal.Input" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_3" targetNode="FCMComposite_1_3" sourceNode="InTerminal.Input2" sourceTerminalName="OutTerminal.out" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_4" targetNode="OutTerminal.Output" sourceNode="FCMComposite_1_1" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_5" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_6" targetNode="FCMComposite_1_4" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.Ввод"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_7" targetNode="OutTerminal.Output1" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_8" targetNode="OutTerminal.Output1" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_9" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_3" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_10" targetNode="FCMComposite_1_5" sourceNode="FCMComposite_1_2" sourceTerminalName="OutTerminal.Вывод" targetTerminalName="InTerminal.in"/>
+      <connections xmi:type="eflow:FCMConnection" xmi:id="FCMConnection_11" targetNode="FCMComposite_1_6" sourceNode="FCMComposite_1_5" sourceTerminalName="OutTerminal.failure" targetTerminalName="InTerminal.in"/>
+    </composition>
+    <propertyOrganizer>
+      <propertyDescriptor groupName="Group.Basic" configurable="true" userDefined="true" describedAttribute="Property.moduleName">
+        <propertyName xmi:type="utility:TranslatableString" key="Property.moduleName" bundleName="pochtabank/common/utils/logging/AddLog" pluginId="Pochtabank.COMMON.V1.lib"/>
+        <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.QueueSignal">
+          <propertyName xmi:type="utility:TranslatableString" key="Property.QueueSignal" bundleName="pochtabank/common/utils/handlers/ErrorHander" pluginId="Pochtabank.COMMON.V1.lib"/>
+          <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.QueueLog">
+            <propertyName xmi:type="utility:TranslatableString" key="Property.QueueLog" bundleName="SendLogToQueue" pluginId="Letobank.COMMON.V2.Lib"/>
+            <propertyDescriptor groupName="Group.Basic" propertyEditor="com.ibm.etools.mft.ibmnodes.editors.mq.MQQueueNameEditor" configurable="true" describedAttribute="Property.QueueLogFatal">
+              <propertyName xmi:type="utility:TranslatableString" key="Property.QueueLogFatal" bundleName="SendLogToQueue" pluginId="Letobank.COMMON.V2.Lib"/>
+            </propertyDescriptor>
+          </propertyDescriptor>
+        </propertyDescriptor>
+      </propertyDescriptor>
+    </propertyOrganizer>
+    <attributeLinks promotedAttribute="Property.moduleName" overriddenNodes="FCMComposite_1_3 FCMComposite_1_2 FCMComposite_1_1">
+      <overriddenAttribute href="pochtabank/common/utils/logging/AddLog.subflow#Property.moduleName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.QueueSignal" overriddenNodes="FCMComposite_1_5">
+      <overriddenAttribute href="ComIbmMQOutput.msgnode#Property.queueName"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.QueueLog" overriddenNodes="FCMComposite_1_4">
+      <overriddenAttribute href="pochtabank/common/utils/logging/SendLogToQueue.subflow#Property.QueueLog"/>
+    </attributeLinks>
+    <attributeLinks promotedAttribute="Property.QueueLogFatal" overriddenNodes="FCMComposite_1_4">
+      <overriddenAttribute href="pochtabank/common/utils/logging/SendLogToQueue.subflow#Property.QueueLogFatal"/>
+    </attributeLinks>
+    <stickyBoard/>
+  </eClassifiers>
+</ecore:EPackage>
