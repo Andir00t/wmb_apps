@@ -25,7 +25,7 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.moduleName" name="moduleName" lowerBound="1" defaultValueLiteral="BrokerPOSFileAdapter_CRMA">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueIn" name="AppReplyToQueueIn" lowerBound="1" defaultValueLiteral="LETOBANK.ADP.SRVEFRSB.V1.RETRY">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueIn" name="AppReplyToQueueIn" lowerBound="1" defaultValueLiteral="APP.RETRY">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <translation xmi:type="utility:TranslatableString" key="RetryProcessBeforeWS" bundleName="pochtabank/common/utils/senders/RetryProcessBeforeWS" pluginId="Pochtabank.COMMON.V1.lib"/>

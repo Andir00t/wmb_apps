@@ -4,15 +4,15 @@
     nsPrefix="pochtabank_common_utils_retry_pochtabank_common_utils_retryq_pinger.msgflow">
   <eClassifiers xmi:type="eflow:FCMComposite" name="FCMComposite_1">
     <eSuperTypes href="http://www.ibm.com/wbi/2005/eflow#//FCMBlock"/>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="LETOBANK.SRV.SHARED.RETRY">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="SharedRetryQ">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.Ping_Interval_sec" name="Ping_Interval_sec" defaultValueLiteral="1">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eStructuralFeatures>
-    <translation xmi:type="utility:TranslatableString" key="pochtabank_common_utils_retryq_pinger" bundleName="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger" pluginId="Letobank.UTILS.LOGGER_ES.V1.App"/>
-    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Letobank.UTILS.LOGGER_ES.V1.App/icons/full/obj16/pochtabank_common_utils_retryq_pinger.gif"/>
-    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Letobank.UTILS.LOGGER_ES.V1.App/icons/full/obj30/pochtabank_common_utils_retryq_pinger.gif"/>
+    <translation xmi:type="utility:TranslatableString" key="pochtabank_common_utils_retryq_pinger" bundleName="pochtabank/common/utils/retry/pochtabank_common_utils_retryq_pinger" pluginId="Pochtabank.LOGGER_ES.App"/>
+    <colorGraphic16 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.LOGGER_ES.App/icons/full/obj16/pochtabank_common_utils_retryq_pinger.gif"/>
+    <colorGraphic32 xmi:type="utility:GIFFileGraphic" resourceName="platform:/plugin/Pochtabank.LOGGER_ES.App/icons/full/obj30/pochtabank_common_utils_retryq_pinger.gif"/>
     <composition>
       <nodes xmi:type="ComIbmTimeoutNotification.msgnode:FCMComposite_1" xmi:id="FCMComposite_1_1" location="96,130" uniqueIdentifier="uniqTimerId">
         <translation xmi:type="utility:ConstantString" string="Resend Init"/>

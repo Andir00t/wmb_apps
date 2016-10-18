@@ -38,7 +38,7 @@ CREATE PROCEDURE addLogToEnvironment(IN ref REFERENCE,IN code INT, IN descriptio
 	SET ref.msgBody = msgBodyBlob;
 END;
 
-CREATE FUNCTION AddInitialization(IN env REFERENCE, IN TransactionId BLOB,IN ModuleName CHARACTER,IN QueueManagerName CHARACTER,IN BrokerName CHARACTER,IN ExecutionGroupName CHARACTER,IN MessageFlowLabel CHARACTER)		
+CREATE PROCEDURE AddInitialization(IN env REFERENCE, IN TransactionId BLOB,IN ModuleName CHARACTER,IN QueueManagerName CHARACTER,IN BrokerName CHARACTER,IN ExecutionGroupName CHARACTER,IN MessageFlowLabel CHARACTER)		
 BEGIN
 	IF NOT EXISTS(env.usr.logs[]) THEN
 		SET env.usr.logs VALUE = NULL;
@@ -49,7 +49,7 @@ BEGIN
 END;
 
 
-CREATE FUNCTION AddLogSection(IN env REFERENCE, IN Body REFERENCE, IN Code INTEGER, IN AttachBody BOOLEAN, IN LogLevel INTEGER, IN LogDescription CHAR, IN Enc INTEGER)		
+CREATE PROCEDURE AddLogSection(IN env REFERENCE, IN Body REFERENCE, IN Code INTEGER, IN AttachBody BOOLEAN, IN LogLevel INTEGER, IN LogDescription CHAR, IN Enc INTEGER)		
 BEGIN
 	DECLARE msgBodyBlob BLOB NULL;
 	IF (AttachBody) THEN
@@ -58,7 +58,7 @@ BEGIN
 	CALL addLogToEnvironment(env.usr.logs, Code, LogDescription, LogLevel, CURRENT_TIMESTAMP, msgBodyBlob);
 END;
 
-CREATE FUNCTION AddInCodeLogSection(IN env REFERENCE, IN outRoot REFERENCE, IN attachBody BOOLEAN, IN moduleName CHARACTER, IN logLevel INTEGER, IN code INTEGER, IN logMessage	CHARACTER)
+CREATE PROCEDURE AddInCodeLogSection(IN env REFERENCE, IN outRoot REFERENCE, IN attachBody BOOLEAN, IN moduleName CHARACTER, IN logLevel INTEGER, IN code INTEGER, IN logMessage	CHARACTER)
 BEGIN	
 		DECLARE transID BLOB;
 		IF EXISTS(outRoot.MQMD.MsgId[]) THEN
@@ -71,7 +71,7 @@ BEGIN
 END;
 
 
-CREATE PROCEDURE getExceptionInfo(INOUT ref REFERENCE, OUT code INT, OUT descr CHAR)
+CREATE FUNCTION getExceptionInfo(INOUT ref REFERENCE, OUT code INT, OUT descr CHAR)
 BEGIN
 	WHILE (FIELDNAME(ref) <> 'Insert')AND(LASTMOVE(ref)) DO
 		MOVE ref LASTCHILD;
@@ -167,48 +167,52 @@ END;
 CREATE PROCEDURE SaveEnvToRFH2(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
 		IF NOT EXISTS(outRoot.MQRFH2[]) THEN 
 			CALL CreateMQRFH2Domain(outRoot);
-			CALL CopyBranch(env, outRoot.MQRFH2);
+			SET outRoot.MQRFH2.*[] = env.*[]; 
 		ELSE 
-			CALL CopyBranch(env, outRoot.MQRFH2);
+			SET outRoot.MQRFH2.*[] = env.*[];
+		END IF; 	
+END;
+
+CREATE PROCEDURE SaveEnvToRFH2ToRetry(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
+		IF NOT EXISTS(outRoot.MQRFH2[]) THEN 
+			CALL CreateMQRFH2Domain(outRoot);
+			SET outRoot.MQRFH2.usr.sender.*[] = env.usr.sender.*[]; 
+		ELSE 
+			SET outRoot.MQRFH2.usr.sender.*[] = env.usr.sender.*[]; 
 		END IF; 	
 END;
 
 CREATE PROCEDURE RestoreEnvFromRFH2(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
 	IF EXISTS(inRoot.MQRFH2[]) THEN 
-		SET env = inRoot.MQRFH2;
+		SET env.*[] = inRoot.MQRFH2.*[];
 	END IF; 
 END;
 
-CREATE PROCEDURE SaveMsgToRetry(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
-	CREATE FIELD env.usr.sender.inputMsg;
-	CREATE FIELD env.usr.sender.inputMsg.MQMD;
-	IF FIELDNAME(inRoot.XMLNSC.(XMLNSC.Element)[>]) IS NOT NULL THEN
-		CALL CreateXMLNSCDomain(env.usr.sender.inputMsg);
-		SET env.usr.sender.inputMsg.XMLNSC = inRoot.XMLNSC;
-	ELSE
-		CALL CreateSOAPDomain(env.usr.sender.inputMsg);
-		SET env.usr.sender.inputMsg.SOAP = inRoot.SOAP;		
-	END IF;	
- 	SET env.usr.sender.inputMsg.MQMD.ReplyToQ = inRoot.MQMD.ReplyToQ;
- 	SET env.usr.sender.inputMsg.MQMD.ReplyToQMgr = inRoot.MQMD.ReplyToQMgr;
- 	IF EXISTS(inRoot.MQRFH2[]) THEN
- 		CREATE FIELD env.usr.sender.inputMsg.MQRFH2;
- 		SET env.usr.sender.inputMsg.MQRFH2.usr = inRoot.MQRFH2.usr;
- 	END IF;
- 	
-END; 
+CREATE PROCEDURE SaveInputMsgToRetry(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
+		DECLARE msgDomain CHARACTER FIELDNAME(inRoot.*[<]);
+		SET env.usr.sender.inputMsg.MQMD.ReplyToQ = inRoot.MQMD.ReplyToQ;
+ 		SET env.usr.sender.inputMsg.MQMD.ReplyToQMgr = inRoot.MQMD.ReplyToQMgr;
+		IF EXISTS(inRoot.MQRFH2[]) THEN
+			SET env.usr.sender.inputMsg.MQRFH2 = ASBITSTREAM(inRoot.MQRFH2 OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID() FORMAT inRoot.Properties.MessageFormat);
+		END IF;
+		IF msgDomain = 'XMLNSC' THEN
+			SET env.usr.sender.inputMsg.XMLNSC = ASBITSTREAM(inRoot.XMLNSC OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+		ELSEIF msgDomain = 'SOAP' THEN
+			SET env.usr.sender.inputMsg.SOAP = ASBITSTREAM(inRoot.SOAP OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+		END IF;
+END;
 
-
-CREATE PROCEDURE RestoreMsgToRetry(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
+CREATE PROCEDURE SaveMsgHeadersToRetry(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
 	CALL CreateMQMDDomain(outRoot);
 	SET outRoot.MQMD.ReplyToQ = env.usr.sender.inputMsg.MQMD.ReplyToQ;
 	SET outRoot.MQMD.ReplyToQMgr = env.usr.sender.inputMsg.MQMD.ReplyToQMgr;
 	IF EXISTS(env.usr.sender.inputMsg.MQRFH2[]) THEN
-	CALL CreateMQRFH2Domain(outRoot);
-	SET outRoot.MQRFH2.usr = env.usr.sender.inputMsg.MQRFH2.usr;
+		SET outRoot.MQMD.Format = MQFMT_RF_HEADER_2;
+		SET outRoot.MQMD.Encoding = GetDefaultEncoding();
+	    SET outRoot.MQMD.CodedCharSetId = GetDefaultCCSID(); 
+		CREATE NEXTSIBLING OF outRoot.MQMD DOMAIN 'MQRFH2' PARSE(CAST(env.usr.sender.inputMsg.MQRFH2 AS BLOB) OPTIONS RootBitStream CCSID GetDefaultCCSID() ENCODING GetDefaultEncoding());
 	END IF;	
 END; 
-
 
 CREATE PROCEDURE CreateMQMDDomain(IN outRoot REFERENCE)
 BEGIN

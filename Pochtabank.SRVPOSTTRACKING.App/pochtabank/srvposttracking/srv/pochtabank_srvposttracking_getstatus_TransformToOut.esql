@@ -9,7 +9,9 @@ DECLARE SuccessItemsCount SHARED INTEGER 0;
 CREATE COMPUTE MODULE pochtabank_srvposttracking_getstatus_TransformToOut
 	CREATE FUNCTION Main() RETURNS BOOLEAN
 	BEGIN
-	
+		
+		DECLARE sblns NAMESPACE 'http://www.siebel.com/xml/ATCCard%20Integration%20ABS';
+		
 		IF CAST(InputRoot.SOAP.*:Body.*:answerByTicketResponse.*:error.*:ErrorTypeID AS INTEGER) = 6 THEN
 			DECLARE CustomCorrelId BLOB GUIDASBLOB();
 			CALL CreateMQRFH2Domain(OutputRoot);
@@ -30,24 +32,35 @@ CREATE COMPUTE MODULE pochtabank_srvposttracking_getstatus_TransformToOut
 			DECLARE itemRef REFERENCE TO InputRoot.SOAP.*:Body.*:answerByTicketResponse.*:value.*:Item[>];
 			CALL CreateXMLNSCDomain(OutputRoot);
 			WHILE LASTMOVE(itemRef) DO
-			  CREATE FIELD OutputRoot.XMLNSC.SRVPostTrackingResponse.value;
-			  DECLARE ref REFERENCE TO OutputRoot.XMLNSC.SRVPostTrackingResponse.value;
+				
+			  CREATE FIELD OutputRoot.XMLNSC.ListOfCardIntegration.SiebelCard;
+			  DECLARE ref REFERENCE TO OutputRoot.XMLNSC.ListOfCardIntegration.SiebelCard;
 			  DECLARE operationRef REFERENCE TO itemRef.*:Operation[<];  
+	          DECLARE operTypeID INTEGER CAST(FIELDVALUE(operationRef.OperTypeID) AS INTEGER);  
+			  DECLARE operCtgID INTEGER CAST(FIELDVALUE(operationRef.OperCtgID) AS INTEGER);
+			  DECLARE cardDeliveryStatus CHARACTER GetCardLogisticStatus(operTypeID, operCtgID);
+		          	          
 	          SET ref.ABSCardId = THE(SELECT ITEM C.ID FROM Environment.CallBack.MQRFH2.usr.BarcodesList.Barcode[] AS C 
 			        					WHERE C.BARCODE = FIELDVALUE(itemRef.Barcode));
-			  SET ref.TrackingNumber = FIELDVALUE(itemRef.Barcode);
-				  IF EXISTS(itemRef.*:Error[]) THEN
+			     IF EXISTS(itemRef.*:Error[]) THEN
+		     	   	  SET ref.TrackingNumber = FIELDVALUE(itemRef.Barcode);
 		     	   	  SET ref.Error.ErrorTypeID = operationRef.*:Error.*:ErrorTypeID;
 				  	  SET ref.Error.ErrorName = operationRef.*:Error.*:ErrorName;
 				  	  SET ErrorItemsCount = ErrorItemsCount + 1;
-				  ELSE
-    				  SET ref.CardLogisticStatus = FIELDVALUE(operationRef.IndexOper);
-	    			  SET ref.CardDeliveryStatus = FIELDVALUE(operationRef.OperName);
+				  	  SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'LETOBANK.SRV.FATAL';	
+			     ELSE
+			     	  SET ref.CardDeliveryStatus = cardDeliveryStatus;
+			     	  SET ref.TrackingNumber = FIELDVALUE(itemRef.Barcode);
+			     	  SET ref.PostAddress = FIELDVALUE(itemRef.IndexOper);
+    				  IF operTypeID = 2 THEN
+    				  	CREATE FIELD ref.ListOfABSCards.ABSCard.CardLogisticStatus;
+    				  	SET ref.ListOfABSCards.ABSCard.CardLogisticStatus = 'CLIENT AVAILABLE';
+    				  END IF;
 	    			  SET SuccessItemsCount = SuccessItemsCount + 1;
+	    			  SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'POST.STATUS.OUT';
 				  END IF;
-			  SET OutputLocalEnvironment.Destination.MQ.DestinationData[1].queueName = 'POST.STATUS.OUT';			  
-		   	  PROPAGATE TO TERMINAL 'out' DELETE NONE;
-		   	  SET OutputRoot.XMLNSC.SRVPostTrackingResponse.value = NULL;
+			  PROPAGATE TO TERMINAL 'out' DELETE NONE;
+			  SET OutputRoot.XMLNSC.ListOfCardIntegration.SiebelCard = NULL;
 		   	  SET OutMsgsCount = OutMsgsCount + 1;
 	          MOVE itemRef NEXTSIBLING REPEAT NAME;
 		   END WHILE;
@@ -56,6 +69,25 @@ CREATE COMPUTE MODULE pochtabank_srvposttracking_getstatus_TransformToOut
 		END IF;
 	RETURN FALSE;
 	
-	END;
+		END;
+		
+CREATE FUNCTION GetCardLogisticStatus(IN operTypeID INTEGER, IN operCtgID INTEGER) RETURNS CHARACTER
+BEGIN
+	 DECLARE postStatus CHARACTER;
+	 IF operTypeID = 2 THEN 
+	 	SET postStatus = 'Client Received';
+	 ELSEIF operTypeID = 3 THEN
+	 	SET postStatus = 'Returned to Bank';
+	 ELSEIF ((operTypeID = 8) AND ((operCtgID = 2) OR (operCtgID = 9) OR (operCtgID = 11) OR (operCtgID = 12) 
+	 		OR (operCtgID = 14) OR (operCtgID = 15) OR (operCtgID = 16) OR (operCtgID = 17) OR (operCtgID = 18) 
+	 		OR (operCtgID = 19) OR (operCtgID = 20) OR (operCtgID = 21) OR (operCtgID = 22) OR (operCtgID = 23) 
+	 		OR (operCtgID = 24) OR (operCtgID = 25) OR (operCtgID = 26) OR (operCtgID = 27) OR (operCtgID = 28))) THEN
+	 	SET postStatus = 'Post Received';
+	 ELSE 
+	 	SET postStatus = 'Post Pending';
+	 END IF;
+
+	RETURN postStatus;
+END;
 
 END MODULE;

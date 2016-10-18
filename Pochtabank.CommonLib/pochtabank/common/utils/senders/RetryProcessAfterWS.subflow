@@ -7,10 +7,10 @@
     <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.customModuleName" name="customModuleName" lowerBound="1" defaultValueLiteral="define log module name">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueOut" name="AppReplyToQueueOut" lowerBound="1" defaultValueLiteral="RetryQ">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.AppReplyToQueueOut" name="AppReplyToQueueOut" lowerBound="1" defaultValueLiteral="APP.RETRY">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
-    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="SharedRetryQ">
+    <eStructuralFeatures xmi:type="ecore:EAttribute" xmi:id="Property.SharedRetryQueue" name="SharedRetryQueue" lowerBound="1" defaultValueLiteral="SHARED.RETRY">
       <eType xmi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eStructuralFeatures>
     <translation xmi:type="utility:TranslatableString" key="RetryProcessAfterWS" bundleName="pochtabank/common/utils/senders/RetryProcessAfterWS" pluginId="Pochtabank.COMMON.V1.lib"/>

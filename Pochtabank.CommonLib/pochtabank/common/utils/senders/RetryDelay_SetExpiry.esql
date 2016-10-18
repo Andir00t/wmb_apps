@@ -10,7 +10,8 @@ CREATE COMPUTE MODULE RetryDelay_SetExpiry
 		SET OutputRoot = InputRoot;
 		SET OutputLocalEnvironment = InputLocalEnvironment;
 		CALL CreateMQMDDomainWithExpiry(OutputRoot, CAST(Environment.usr.sender.delay AS INT), AppReplyToQueueOut);
-		CALL SaveEnvToRFH2(OutputRoot, Environment);
+		CALL SaveEnvToRFH2ToRetry(OutputRoot, Environment);
+		CALL SaveLogToNextFlow(OutputRoot, Environment);
 	RETURN TRUE;
 	END;
 	

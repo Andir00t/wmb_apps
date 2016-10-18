@@ -14,66 +14,62 @@ CREATE COMPUTE MODULE RetryProcessAfterWS_CheckAttempts
 			DECLARE codeError INTEGER 0;
 			DECLARE errorDescription CHARACTER '';
 			SET Environment.usr.sender.failureMsg = InputExceptionList;
-			DELETE FIELD InputExceptionList;
 			CALL GetInCodeExceptionDetails(Environment.usr.sender.failureMsg, codeError, errorDescription);
+		    DELETE FIELD InputExceptionList;
 		    IF (attemptCount <= retry) THEN
 		    CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, codeError, 'Вызов сервиса не удался. Попытка ' || 
 		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' ||  errorDescription);
 		    END IF;
     	ELSEIF EXISTS(InputRoot.SOAP.*:Body.*:Fault[]) THEN
 			DECLARE fault REFERENCE TO InputRoot.SOAP.*:Body.*:Fault;
-			SET Environment.usr.sender.soapFaultMsg = InputRoot.SOAP.Body;
+			SET Environment.usr.sender.soapFaultMsg = ASBITSTREAM(InputRoot.SOAP OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
 			IF (attemptCount <= retry) THEN
 			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, 0, 'Вызов сервиса не удался. Попытка ' || 
 		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' ||  fault.*:faultcode || ' | ' || fault.*:faultstring);
 			END IF;
-    	ELSE
-			SET Environment.usr.sender.HTTPfaultMsg = InputRoot.XMLNSC;
+		ELSE
+			CREATE FIELD Environment.usr.sender.httpFaultMsg;
+			SET Environment.usr.sender.httpFaultMsg = ASBITSTREAM(InputRoot.XMLNSC OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
 			IF (attemptCount <= retry) THEN
 			CALL AddInCodeLogSection(Environment, OutputRoot, FALSE, customModuleName, 10, 0, 'Вызов сервиса не удался. Попытка ' || 
-		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' || Environment.usr.sender.HTTPfaultMsg);
+		    CAST(attemptCount AS CHARACTER) || ' из ' || CAST(retry AS CHARACTER) || '. Причина: ' || Environment.usr.sender.httpFaultMsg);
 			END IF;
 		END IF;
 		 		
 		IF (attemptCount <= retry) THEN
-			IF FIELDNAME(Environment.usr.sender.inputMsg.XMLNSC.(XMLNSC.Element)[>]) IS NOT NULL THEN
-				CALL CreateXMLNSCDomain(OutputRoot);
-				SET OutputRoot.XMLNSC = Environment.usr.sender.inputMsg.XMLNSC;
+			IF EXISTS(Environment.usr.sender.inputMsg.XMLNSC[]) THEN
+				CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(CAST(Environment.usr.sender.inputMsg.XMLNSC AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
 			ELSE
-				CALL CreateSOAPDomain(OutputRoot);
-				SET OutputRoot.SOAP = Environment.usr.sender.inputMsg.SOAP;	
-			END IF;	
+				CREATE LASTCHILD OF OutputRoot DOMAIN('SOAP') PARSE(CAST(Environment.usr.sender.inputMsg.SOAP AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+			END IF;
+			SET OutputRoot.Properties.CodedCharSetId = GetDefaultCCSID();	
 			SET Environment.usr.sender.attemptCount = attemptCount + 1;
 			PROPAGATE TO TERMINAL 'out';
 		ELSE
-			IF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.HTTPfaultMsg[])) THEN
-				CALL RestoreMsgToRetry(OutputRoot, Environment);
+			IF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.httpFaultMsg[])) THEN
+				CALL SaveMsgHeadersToRetry(OutputRoot, Environment);
 				CALL SaveLogToNextFlow(OutputRoot, Environment);
-				CALL CreateXMLNSCDomain(OutputRoot);
-				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
-				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(CAST(Environment.usr.sender.inputMsg.XMLNSC AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+				SET OutputExceptionList = Environment.usr.sender.failureMsg; 
 				PROPAGATE TO TERMINAL 'out2';
 			ELSEIF (EXISTS(Environment.usr.sender.failureMsg[]) AND EXISTS(Environment.usr.sender.soapFaultMsg[])) THEN				
-				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveMsgHeadersToRetry(OutputRoot, Environment);
 				CALL SaveLogToNextFlow(OutputRoot, Environment);
-				CALL CreateSOAPDomain(OutputRoot);
-				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
-				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				CREATE LASTCHILD OF OutputRoot DOMAIN('SOAP') PARSE(CAST(Environment.usr.sender.inputMsg.SOAP AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+				SET OutputExceptionList = Environment.usr.sender.failureMsg;  
 				PROPAGATE TO TERMINAL 'out2';
 			ELSEIF EXISTS(Environment.usr.sender.soapFaultMsg[]) THEN
-				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveMsgHeadersToRetry(OutputRoot, Environment);
 				CALL SaveLogToNextFlow(OutputRoot, Environment);
-				CALL CreateSOAPDomain(OutputRoot);
-				SET OutputRoot.SOAP.Body = Environment.usr.sender.soapFaultMsg;
-				PROPAGATE TO TERMINAL 'out1';
+				CREATE LASTCHILD OF OutputRoot DOMAIN('SOAP') PARSE(CAST(Environment.usr.sender.soapFaultMsg AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
+			PROPAGATE TO TERMINAL 'out1';
 			ELSEIF EXISTS(Environment.usr.sender.HTTPfaultMsg[]) THEN
-				CALL RestoreMsgToRetry(OutputRoot, Environment);
+				CALL SaveMsgHeadersToRetry(OutputRoot, Environment);
 				CALL SaveLogToNextFlow(OutputRoot, Environment);
-				CALL CreateXMLNSCDomain(OutputRoot);
-				SET OutputRoot.XMLNSC = Environment.usr.sender.HTTPfaultMsg;
+				CREATE LASTCHILD OF OutputRoot DOMAIN('XMLNSC') PARSE(CAST(Environment.usr.sender.httpFaultMsg AS BLOB) OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID());
 				PROPAGATE TO TERMINAL 'out1';
 			ELSE
-				SET OutputExceptionList = Environment.usr.sender.failureMsg;
+				SET OutputExceptionList = Environment.usr.sender.failureMsg; 
 				PROPAGATE TO TERMINAL 'out2';
 			END IF;
 		END IF;
