@@ -25,12 +25,7 @@ CREATE PROCEDURE AddErrorListToLastLog(IN env REFERENCE, IN inExcList REFERENCE)
 END;	
 
 CREATE PROCEDURE addLogToEnvironment(IN ref REFERENCE,IN code INT, IN description CHAR, IN logType INTEGER, IN dateTime TIMESTAMP, IN msgBodyBlob BLOB) BEGIN
-	IF NOT EXISTS(ref.log[]) THEN
-		CREATE FIRSTCHILD OF ref AS ref NAME 'log';
-	ELSE
-		CREATE LASTCHILD OF ref AS ref NAME 'log';
-	END IF;
-
+	CREATE LASTCHILD OF ref AS ref NAME 'log';
 	SET ref.code = code;
 	SET ref.description = description;
 	SET ref.dateTime = dateTime;
@@ -260,6 +255,12 @@ BEGIN
 		SET outRoot.Properties.CodedCharSetId = GetDefaultCCSID();
 		CREATE LASTCHILD OF outRoot DOMAIN 'XMLNSC' NAME 'XMLNSC';
 	END IF;
+END;
+
+CREATE PROCEDURE CreateDomains(IN outRoot REFERENCE)
+BEGIN
+	CALL CreateMQRFH2Domain(outRoot);
+	CALL CreateXMLNSCDomain(outRoot);
 END;
 
 CREATE PROCEDURE CreateDomainsXMLNSC(IN outRoot REFERENCE)
