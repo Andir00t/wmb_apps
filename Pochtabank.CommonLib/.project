@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>Pochtabank.COMMON.V1.lib.libJava</project>
+		<project>Pochtabank.COMMON.V1.libJava</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

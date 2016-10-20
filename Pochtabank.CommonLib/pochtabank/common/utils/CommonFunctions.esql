@@ -190,8 +190,12 @@ END;
 
 CREATE PROCEDURE SaveInputMsgToRetry(IN inRoot REFERENCE, IN env REFERENCE) BEGIN
 		DECLARE msgDomain CHARACTER FIELDNAME(inRoot.*[<]);
-		SET env.usr.sender.inputMsg.MQMD.ReplyToQ = inRoot.MQMD.ReplyToQ;
- 		SET env.usr.sender.inputMsg.MQMD.ReplyToQMgr = inRoot.MQMD.ReplyToQMgr;
+		IF NOT isNullOrEmpty(inRoot.MQMD.ReplyToQ) THEN
+			SET env.usr.sender.inputMsg.MQMD.ReplyToQ = inRoot.MQMD.ReplyToQ;
+		END IF;
+		IF NOT isNullOrEmpty(inRoot.MQMD.ReplyToQMgr) THEN
+			SET env.usr.sender.inputMsg.MQMD.ReplyToQMgr = inRoot.MQMD.ReplyToQMgr;
+		END IF;
 		IF EXISTS(inRoot.MQRFH2[]) THEN
 			SET env.usr.sender.inputMsg.MQRFH2 = ASBITSTREAM(inRoot.MQRFH2 OPTIONS RootBitStream ENCODING GetDefaultEncoding() CCSID GetDefaultCCSID() FORMAT inRoot.Properties.MessageFormat);
 		END IF;
@@ -204,8 +208,10 @@ END;
 
 CREATE PROCEDURE SaveMsgHeadersToRetry(IN outRoot REFERENCE, IN env REFERENCE) BEGIN
 	CALL CreateMQMDDomain(outRoot);
-	SET outRoot.MQMD.ReplyToQ = env.usr.sender.inputMsg.MQMD.ReplyToQ;
-	SET outRoot.MQMD.ReplyToQMgr = env.usr.sender.inputMsg.MQMD.ReplyToQMgr;
+	IF EXISTS(env.usr.sender.inputMsg.MQMD[]) THEN
+		SET outRoot.MQMD.ReplyToQ = env.usr.sender.inputMsg.MQMD.ReplyToQ;
+		SET outRoot.MQMD.ReplyToQMgr = env.usr.sender.inputMsg.MQMD.ReplyToQMgr;
+	END IF;
 	IF EXISTS(env.usr.sender.inputMsg.MQRFH2[]) THEN
 		SET outRoot.MQMD.Format = MQFMT_RF_HEADER_2;
 		SET outRoot.MQMD.Encoding = GetDefaultEncoding();
