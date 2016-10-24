@@ -24,33 +24,46 @@ CREATE PROCEDURE AddErrorListToLastLog(IN env REFERENCE, IN inExcList REFERENCE)
 		CALL CopyBranch(inExcList, lastLog);	
 END;	
 
-CREATE PROCEDURE addLogToEnvironment(IN ref REFERENCE,IN code INT, IN description CHAR, IN logType INTEGER, IN dateTime TIMESTAMP, IN msgBodyBlob BLOB) BEGIN
+CREATE PROCEDURE addLogToEnvironment(IN ref REFERENCE,IN code INT, IN description CHAR, IN logType INTEGER, IN dateTime TIMESTAMP, IN msgBodyBlob BLOB, IN operName CHAR, IN inputQ CHAR, IN replyQ CHAR, IN replyQM CHAR) BEGIN
 	CREATE LASTCHILD OF ref AS ref NAME 'log';
 	SET ref.code = code;
 	SET ref.description = description;
 	SET ref.dateTime = dateTime;
 	SET ref.logType = logType;
 	SET ref.msgBody = msgBodyBlob;
+	SET ref.operName = operName;
+	SET ref.inputQ = inputQ;
+	SET ref.replyQ = replyQ;
+	SET ref.replyQM = replyQM;
 END;
 
-CREATE PROCEDURE AddInitialization(IN env REFERENCE, IN TransactionId BLOB,IN ModuleName CHARACTER,IN QueueManagerName CHARACTER,IN BrokerName CHARACTER,IN ExecutionGroupName CHARACTER,IN MessageFlowLabel CHARACTER)		
+CREATE PROCEDURE AddInitialization(IN env REFERENCE, IN TransactionId CHAR,IN ModuleName CHARACTER,IN QueueManagerName CHARACTER,IN BrokerName CHARACTER,IN ExecutionGroupName CHARACTER,IN MessageFlowLabel CHARACTER)		
 BEGIN
 	IF NOT EXISTS(env.usr.logs[]) THEN
 		SET env.usr.logs VALUE = NULL;
-		SET env.usr.logsCommonInfo.transactionId = SUBSTRING(CAST(TransactionId AS CHAR) FROM 3 FOR 48);--GUIDASCHAR();
+		SET env.usr.logsCommonInfo.transactionId = TransactionId;
 		SET env.usr.logsCommonInfo.moduleName = ModuleName;		
 		SET env.usr.logsCommonInfo.sender = QueueManagerName || '\' || BrokerName || '\' || ExecutionGroupName || '\' || MessageFlowLabel;
 	END IF;	
 END;
 
 
-CREATE PROCEDURE AddLogSection(IN env REFERENCE, IN Body REFERENCE, IN Code INTEGER, IN AttachBody BOOLEAN, IN LogLevel INTEGER, IN LogDescription CHAR, IN Enc INTEGER)		
+CREATE PROCEDURE AddLogSection(IN env REFERENCE, IN Root REFERENCE, IN Code INTEGER, IN AttachBody BOOLEAN, IN LogLevel INTEGER, IN LogDescription CHAR, IN Enc INTEGER)		
 BEGIN
 	DECLARE msgBodyBlob BLOB NULL;
+	DECLARE operName CHAR '';
 	IF (AttachBody) THEN
-		SET msgBodyBlob = ASBITSTREAM(Body CCSID Enc);
+		SET msgBodyBlob = ASBITSTREAM(Root.*[<] CCSID Enc);
 	END IF;	
-	CALL addLogToEnvironment(env.usr.logs, Code, LogDescription, LogLevel, CURRENT_TIMESTAMP, msgBodyBlob);
+	IF FIELDNAME(Root.*[<]) = 'XMLNSC' THEN
+		SET operName = FIELDNAME(Root.XMLNSC.*[<]);
+		IF operName = 'Envelope' THEN 
+			SET operName = FIELDNAME(Root.XMLNSC.*:Envelope.*:Body.*[<]);
+		END IF;
+	ELSEIF FIELDNAME(Root.*[<]) = 'SOAP' THEN
+		SET operName = FIELDNAME(Root.SOAP.*:Body.*[<]);
+	END IF;
+	CALL addLogToEnvironment(env.usr.logs, Code, LogDescription, LogLevel, CURRENT_TIMESTAMP, msgBodyBlob, operName, TRIM(Root.MQMD.SourceQueue), TRIM(Root.MQMD.ReplyToQ), TRIM(Root.MQMD.ReplyToQMgr));
 END;
 
 CREATE PROCEDURE AddInCodeLogSection(IN env REFERENCE, IN outRoot REFERENCE, IN attachBody BOOLEAN, IN moduleName CHARACTER, IN logLevel INTEGER, IN code INTEGER, IN logMessage	CHARACTER)
