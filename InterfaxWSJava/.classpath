@@ -9,4 +9,4 @@
 	<classpathentry kind="lib" path="C:/Users/as.popov/IBM/IntegrationToolkit90/workspace_ESIA/Pochtabank.SRVEFRSB.V2.Java/commons-logging-1.2.jar"/>
 	<classpathentry kind="con" path="com.ibm.etools.mft.uri.classpath.MBProjectReference"/>
 	<classpathentry kind="output" path=""/>
-</classpath>
+</classpath> 
